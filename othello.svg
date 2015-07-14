@@ -1,4 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-100 -100 800 800" onload="set_board(evt)">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="1200" height="1200" viewBox="-100 -100 1000 1000"
+     onload="set_board(evt)">
+
 <script type="text/javascript">
 //<![CDATA[
 var ns = "http://www.w3.org/2000/svg";
@@ -35,8 +43,8 @@ var onmouse_white; // 半透明白石
 var onmouse_i = 0;
 var onmouse_j = 0;
 
-var dt = 2; // 石の回転アニメーションの間隔ミリ秒
-var d_ang = 3; // 石の回転アニメーションの角度ステップ
+var dt = 0.1; // 石の回転アニメーションの間隔ミリ秒
+var d_ang = 6 // 石の回転アニメーションの角度ステップ
 
 var start_flag = 0;
 
@@ -421,8 +429,35 @@ function rotate2(i,j,dr,dh,color1,color2) {
 }
 
 
+function pass() {
+    var pass_button = document.getElementById("pass");
+    pass_button.setAttribute("fill", "pink");
+    turn ++;
+    turn %= 2;
+    turn_coloring(turn);
+    setTimeout("pass_color_reset()", 100);
+}
+
+function pass_color_reset() {
+    var pass_button = document.getElementById("pass");
+    pass_button.setAttribute("fill", "skyblue");    
+}
+
+function turn_coloring(turn){
+    var turn_stone = document.getElementById("turn_stone");
+    if (turn == 1){
+        turn_stone.setAttribute("fill", "white");
+    } else {
+        turn_stone.setAttribute("fill", "black");
+    }
+}
+
 
 //]]>
 </script>
 <rect x="-40" y="-40" width="740" height="740" fill="gray" stroke="none" onmouseover="on_mouse_out(evt)"/>
+<rect x="100" y="720" width="480" height="100" fill="skyblue" stroke="none" onclick="pass()" id="pass"/>
+<text x="240" y="800" fill="black" font-size="80" >PASS</text>
+<rect x="660" y="730" width="80" height="80" fill="skyblue" stroke="none" />
+<circle cx="700" cy="770" r="35" fill="black" id="turn_stone"/>
 </svg>
