@@ -48,12 +48,12 @@ function set_board(evt) {
       rect[i][j] = doc.createElementNS(ns, 'rect');
       x = 10 + 80 * (i - 1);
       y = 10 + 80 * (j - 1);
-      rect[i][j].setAttribute('x', String(x));
-      rect[i][j].setAttribute('y', String(y));
+      rect[i][j].setAttribute('x', x);
+      rect[i][j].setAttribute('y', y);
       rect[i][j].setAttribute('width', '80');
       rect[i][j].setAttribute('height', '80');
       rect[i][j].setAttribute('fill', board_green);
-      rect[i][j].setAttribute('id', String(k));
+      rect[i][j].setAttribute('id', k);
       rect[i][j].setAttribute('onmouseover', 'on_mouse_over(evt)');
       //rect[i][j].setAttribute('onmouseout', 'on_mouse_out(evt)');
       rect[i][j].setAttribute('onclick', 'on_click(evt)');
@@ -131,16 +131,16 @@ function set_board(evt) {
       dr = s_r * Math.cos(0);
       dh = s_h * Math.sin(0);
 
-      d_left   = "M" + String(x - dh) + "," + y;
-      d_center = "M" + String(x) + "," + y;
-      d_right  = "M" + String(x + dh) + "," + y;
+      d_left   = "M" + (x - dh) + "," + y;
+      d_center = "M" + x + "," + y;
+      d_right  = "M" + (x + dh) + "," + y;
 
-      d_left   += " h" + dh + " a" + dr + "," + s_r + " 0 0,0 0," + String(2 * s_r);
-      d_left   += " h" + String(-dh) + " a" + dr + "," + s_r + " 0 0,1 0," + String(-2 * s_r);
-      d_center += " h" + dh + " a" + dr + "," + s_r + " 0 0,0 0," + String(2 * s_r);
-      d_center += " h" + String(-dh) + " a" + dr + "," + s_r + " 0 0,1 0," + String(-2 * s_r);
-      d_right  += " a" + dr + "," + s_r + " 0 0,0 0," + String(2 * s_r);
-      d_right  += " a" + dr + "," + s_r + " 0 0,0 0," + String(-2 * s_r);
+      d_left   += " h" + dh + " a" + dr + "," + s_r + " 0 0,0 0," + (2 * s_r);
+      d_left   += " h" + (-dh) + " a" + dr + "," + s_r + " 0 0,1 0," + (-2 * s_r);
+      d_center += " h" + dh + " a" + dr + "," + s_r + " 0 0,0 0," + (2 * s_r);
+      d_center += " h" + (-dh) + " a" + dr + "," + s_r + " 0 0,1 0," + (-2 * s_r);
+      d_right  += " a" + dr + "," + s_r + " 0 0,0 0," + (2 * s_r);
+      d_right  += " a" + dr + "," + s_r + " 0 0,0 0," + (-2 * s_r);
 
       st_l.setAttribute("d", d_left);
       st_c.setAttribute("d", d_center);
@@ -376,16 +376,16 @@ function rotate1(i, j, dr, dh, color1, color2) {
   var x = 10 + 40 + 80 * (i - 1);
   var y = 10 + 40 + 80 * (j - 1) - s_r;
 
-  var d_left   = "M" + String(x - dh) + "," + y;
-  var d_center = "M" + String(x) + "," + y;
-  var d_right  = "M" + String(x + dh) + "," + y;
+  var d_left   = "M" + (x - dh) + "," + y;
+  var d_center = "M" + x + "," + y;
+  var d_right  = "M" + (x + dh) + "," + y;
 
-  d_left   += " h" + dh + " a" + dr + "," + s_r + " 0 0,0 0," + String(2 * s_r);
-  d_left   += " h" + String(-dh) + " a" + dr + "," + s_r + " 0 0,1 0," + String(-2 * s_r);
-  d_center += " h" + dh + " a" + dr + "," + s_r + " 0 0,0 0," + String(2 * s_r);
-  d_center += " h" + String(-dh) + " a" + dr + "," + s_r + " 0 0,1 0," + String(-2 * s_r);
-  d_right  += " a" + dr + "," + s_r + " 0 0,0 0," + String(2 * s_r);
-  d_right  += " a" + dr + "," + s_r + " 0 0,0 0," + String(-2 * s_r);
+  d_left   += " h" + dh + " a" + dr + "," + s_r + " 0 0,0 0," + (2 * s_r);
+  d_left   += " h" + (-dh) + " a" + dr + "," + s_r + " 0 0,1 0," + (-2 * s_r);
+  d_center += " h" + dh + " a" + dr + "," + s_r + " 0 0,0 0," + (2 * s_r);
+  d_center += " h" + (-dh) + " a" + dr + "," + s_r + " 0 0,1 0," + (-2 * s_r);
+  d_right  += " a" + dr + "," + s_r + " 0 0,0 0," + (2 * s_r);
+  d_right  += " a" + dr + "," + s_r + " 0 0,0 0," + (-2 * s_r);
 
   left.setAttribute("d", d_left);
   center.setAttribute("d", d_center);
@@ -404,16 +404,16 @@ function rotate2(i, j, dr, dh, color1, color2) {
   var x = 10 + 40 + 80 * (i - 1);
   var y = 10 + 40 + 80 * (j - 1) - s_r;
 
-  var d_left = "M" + String(x - dh) + "," + y;
-  var d_center = "M" + String(x) + "," + y;
-  var d_right = "M" + String(x + dh) + "," + y;
+  var d_left = "M" + (x - dh) + "," + y;
+  var d_center = "M" + x + "," + y;
+  var d_right = "M" + (x + dh) + "," + y;
 
-  d_left   += " a" + dr + "," + s_r + " 0 0,0 0," + String(2 * s_r);
-  d_left   += " a" + dr + "," + s_r + " 0 0,0 0," + String(-2 * s_r);
-  d_center += " h" + String(-dh) + " a" + dr + "," + s_r + " 0 0,1 0," + String(2 * s_r);
-  d_center += " h" + String(dh) + " a" + dr + "," + s_r + " 0 0,0 0," + String(-2 * s_r);
-  d_right  += " h" + String(-dh) + " a" + dr + "," + s_r + " 0 0,1 0," + String(2 * s_r);
-  d_right  += " h" + String(dh) + " a" + dr + "," + s_r + " 0 0,0 0," + String(-2 * s_r);
+  d_left   += " a" + dr + "," + s_r + " 0 0,0 0," + (2 * s_r);
+  d_left   += " a" + dr + "," + s_r + " 0 0,0 0," + (-2 * s_r);
+  d_center += " h" + (-dh) + " a" + dr + "," + s_r + " 0 0,1 0," + (2 * s_r);
+  d_center += " h" + dh + " a" + dr + "," + s_r + " 0 0,0 0," + (-2 * s_r);
+  d_right  += " h" + (-dh) + " a" + dr + "," + s_r + " 0 0,1 0," + (2 * s_r);
+  d_right  += " h" + dh + " a" + dr + "," + s_r + " 0 0,0 0," + (-2 * s_r);
 
   left.setAttribute("d", d_left);
   center.setAttribute("d", d_center);
