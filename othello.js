@@ -24,7 +24,7 @@ var stone_r = [];
 var s_r = 30; // 石の半径
 var s_h = 10;  // 石の厚み半分
 
-var turn = 0
+var turn = 0;
 var rect = []; //各セル
 
 var onmouse_black; // オンマウス時の半透明黒石
@@ -33,9 +33,7 @@ var onmouse_i = 0;
 var onmouse_j = 0;
 
 var dt = 0.1; // 石の回転アニメーションの間隔ミリ秒
-var d_ang = 6 // 石の回転アニメーションの角度ステップ
-
-var start_flag = 0;
+var d_ang = 6; // 石の回転アニメーションの角度ステップ
 
 function set_board(evt) {
   var doc = evt.target.ownerDocument;
@@ -43,9 +41,9 @@ function set_board(evt) {
   var i, j, k, x, y, fill;
 
   //-- 各セルを個別の正方形として作成．クリック時のイベント処理のため．--------------------
-  for (var i=1; i<size*2+1; i++) {
+  for (i=1; i<size*2+1; i++) {
     rect[i] = [null];
-    for (var j=1; j<size*2+1; j++) {
+    for (j=1; j<size*2+1; j++) {
       k = (2*size+2)*i + j;
       rect[i][j] = doc.createElementNS(ns, 'rect');
       x = 10 + 80 * (i-1);
@@ -64,7 +62,8 @@ function set_board(evt) {
   }
 
   //--- 罫線 -------------------------------------------
-  for (var i=0; i<size*2; i++) {
+  var line;
+  for (i=0; i<size*2; i++) {
     line = doc.createElementNS(ns, 'line');
     line.setAttribute('x1', 90 + 80*i);
     line.setAttribute('y1', 10);
@@ -74,7 +73,7 @@ function set_board(evt) {
     line.setAttribute('stroke-width', 2);
     svgsvg.appendChild(line);
   }
-  for (var i=0; i<size*2; i++) {
+  for (i=0; i<size*2; i++) {
     line = doc.createElementNS(ns, 'line');
     line.setAttribute('x1', 10);
     line.setAttribute('y1', 90 + 80*i);
@@ -86,7 +85,7 @@ function set_board(evt) {
   }
 
   //-- 外枠 --------------------------------------------
-  line = doc.createElementNS(ns, 'rect')
+  line = doc.createElementNS(ns, 'rect');
   line.setAttribute('x', 10);
   line.setAttribute('y', 10);
   line.setAttribute('width', 80*size*2);
@@ -97,9 +96,10 @@ function set_board(evt) {
   svgsvg.appendChild(line);
 
   //--- 4箇所のドット ----------------------------------
+  var dot;
   for (i=0; i<2; i++) {
     for (j=0; j<2; j++) {
-      dot = doc.createElementNS(ns, 'circle')
+      dot = doc.createElementNS(ns, 'circle');
       dot.setAttribute('cx', 170 + 80*size*i);
       dot.setAttribute('cy', 170 + 80*size*j);
       dot.setAttribute('r', 5);
@@ -111,12 +111,12 @@ function set_board(evt) {
   //--- 各セルの石：回転アニメーションのために3パーツに分割 ----------------------------------
   var st_l, st_c, st_r, dr, dh, d_left, d_center, d_right;
 
-  for (var i=1; i<size*2+1; i++) {
+  for (i=1; i<size*2+1; i++) {
 
     stone_l[i] = [];
     stone_c[i] = [];
     stone_r[i] = [];
-    for (var j=1; j<size*2+1; j++) {
+    for (j=1; j<size*2+1; j++) {
       x = 10 + 40 + 80*(i-1);
       y = 10 + 40 + 80*(j-1) - s_r;
 
@@ -128,8 +128,8 @@ function set_board(evt) {
       st_c = stone_c[i][j];
       st_r = stone_r[i][j];
 
-      dr = s_r * Math.cos(0 * Math.PI/180);
-      dh = s_h * Math.sin(0 * Math.PI/180);
+      dr = s_r * Math.cos(0);
+      dh = s_h * Math.sin(0);
 
       d_left   = "M" + String(x - dh) + "," + y;
       d_center = "M" + String(x)      + "," + y;
@@ -160,8 +160,8 @@ function set_board(evt) {
     }
   }
 
-  for (var i=size; i<size+2; i++){
-    for (var j=size; j<size+2; j++){
+  for (i=size; i<size+2; i++){
+    for (j=size; j<size+2; j++){
       stone_l[i][j].setAttribute("fill-opacity", "1");
       stone_c[i][j].setAttribute("fill-opacity", "1");
       stone_r[i][j].setAttribute("fill-opacity", "1");
@@ -172,7 +172,7 @@ function set_board(evt) {
 
 
   //-- マウスオーバー時に表示させる半透明の石 ----------
-  onmouse_black =  doc.createElementNS(ns, 'circle')
+  onmouse_black =  doc.createElementNS(ns, 'circle');
   onmouse_black.setAttribute('cx', 10+40);
   onmouse_black.setAttribute('cy', 10+40);
   onmouse_black.setAttribute('r', 30);
@@ -181,7 +181,7 @@ function set_board(evt) {
   onmouse_black.setAttribute('onclick', 'on_click_circle(evt)');
   svgsvg.appendChild(onmouse_black);
 
-  onmouse_white =  doc.createElementNS(ns, 'circle')
+  onmouse_white =  doc.createElementNS(ns, 'circle');
   onmouse_white.setAttribute('cx', 10+40);
   onmouse_white.setAttribute('cy', 10+40);
   onmouse_white.setAttribute('r', 30);
@@ -212,7 +212,7 @@ function on_mouse_over(evt){
   }
 }
 
-function on_mouse_out(evt){
+function on_mouse_out(){
   onmouse_black.setAttribute('fill-opacity', '0');
   onmouse_white.setAttribute('fill-opacity', '0');
 }
@@ -225,11 +225,8 @@ function on_click(evt){
   click(i,j);
 }
 
-function on_click_circle(evt){
-  var i = onmouse_i;
-  var j = onmouse_j;
-
-  click(i,j);
+function on_click_circle(){
+  click(onmouse_i, onmouse_j);
 }
 
 function click(i,j){
@@ -263,7 +260,7 @@ function check_stone(i,j,turn){
   var flip_que = [];
   var itself = turn;
   var another = (turn + 1) % 2;
-  var cnt;
+  var cnt, ci, cj, next, ti, tj;
   for (var di=-1; di<2; di++){
     for (var dj=-1; dj<2; dj++){
       ci = i + di;
@@ -336,7 +333,6 @@ function flip_stone1(flip_que, ang, color1, color2){
 
   if (ang == 90) {
     setTimeout(function(){ flip_stone2(flip_que, ang, color1, color2); }, dt); //タイマーセット．dtミリ秒ごとに1ステップ実行
-    return;
   } else {
     setTimeout(function(){ flip_stone1(flip_que, ang, color1, color2); }, dt); //タイマーセット．dtミリ秒ごとに1ステップ実行
   }
@@ -345,20 +341,20 @@ function flip_stone1(flip_que, ang, color1, color2){
 function flip_stone2(flip_que, ang, color1, color2){
   if (ang > 180){
     return;
-  } else {
-    var dr = s_r * Math.cos(ang * Math.PI/180);
-    var dh = s_h * Math.sin(ang * Math.PI/180);
-
-    for (var k=0; k<flip_que.length; k++){
-      var i = flip_que[k][0];
-      var j = flip_que[k][1];
-      rotate2(i,j,dr,dh, color1, color2);
-    }
-
-    ang += d_ang;
-
-    setTimeout(function(){ flip_stone2(flip_que, ang, color1, color2); }, dt); //タイマーセット．dtミリ秒ごとに1ステップ実行
   }
+
+  var dr = s_r * Math.cos(ang * Math.PI/180);
+  var dh = s_h * Math.sin(ang * Math.PI/180);
+
+  for (var k=0; k<flip_que.length; k++){
+    var i = flip_que[k][0];
+    var j = flip_que[k][1];
+    rotate2(i,j,dr,dh, color1, color2);
+  }
+
+  ang += d_ang;
+
+  setTimeout(function(){ flip_stone2(flip_que, ang, color1, color2); }, dt); //タイマーセット．dtミリ秒ごとに1ステップ実行
 }
 
 
