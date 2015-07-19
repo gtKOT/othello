@@ -30,8 +30,8 @@ cell[half_size + 1][half_size + 1] = BLACK;
 var stone_l = [];
 var stone_c = [];
 var stone_r = [];
-var s_r = 30;  // 石の半径
-var s_h = 10;  // 石の厚み半分
+var stone_radius = 30;  // 石の半径
+var stone_thickness = 10;  // 石の厚み半分
 
 var BLACK_TURN = BLACK;
 var WHITE_TURN = WHITE;
@@ -139,21 +139,21 @@ function draw_stones(board_svg, frame_width, cell_width, cell_height) {
     stone_r[i] = [];
     for (j = 1; j < size + 1; j++) {
       x = frame_width + cell_width  / 2 + cell_width  * (i - 1);
-      y = frame_width + cell_height / 2 + cell_height * (j - 1) - s_r;
+      y = frame_width + cell_height / 2 + cell_height * (j - 1) - stone_radius;
 
-      dr = s_r * Math.cos(0);
-      dh = s_h * Math.sin(0);
+      dr = stone_radius * Math.cos(0);
+      dh = stone_thickness * Math.sin(0);
 
       d_left   = 'M' + (x - dh) + ',' + y;
       d_center = 'M' + x + ',' + y;
       d_right  = 'M' + (x + dh) + ',' + y;
 
-      d_left   += ' h' + dh + ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (2 * s_r);
-      d_left   += ' h' + (-dh) + ' a' + dr + ',' + s_r + ' 0 0,1 0,' + (-2 * s_r);
-      d_center += ' h' + dh + ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (2 * s_r);
-      d_center += ' h' + (-dh) + ' a' + dr + ',' + s_r + ' 0 0,1 0,' + (-2 * s_r);
-      d_right  += ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (2 * s_r);
-      d_right  += ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (-2 * s_r);
+      d_left   += ' h' + dh + ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (2 * stone_radius);
+      d_left   += ' h' + (-dh) + ' a' + dr + ',' + stone_radius + ' 0 0,1 0,' + (-2 * stone_radius);
+      d_center += ' h' + dh + ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (2 * stone_radius);
+      d_center += ' h' + (-dh) + ' a' + dr + ',' + stone_radius + ' 0 0,1 0,' + (-2 * stone_radius);
+      d_right  += ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (2 * stone_radius);
+      d_right  += ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (-2 * stone_radius);
 
       st_l = svg_util.createPath({d: d_left,   fill: 'black', 'fill-opacity': 0});
       st_c = svg_util.createPath({d: d_center, fill: 'white', 'fill-opacity': 0});
@@ -184,7 +184,7 @@ function draw_stones(board_svg, frame_width, cell_width, cell_height) {
   onmouse_black = svg_util.createCircle({
     cx: frame_width + cell_width  / 2,
     cy: frame_width + cell_height / 2,
-    r: s_r,
+    r: stone_radius,
     fill: 'black'
   });
   onmouse_black.setAttribute('fill-opacity', 0);
@@ -194,7 +194,7 @@ function draw_stones(board_svg, frame_width, cell_width, cell_height) {
   onmouse_white = svg_util.createCircle({
     cx: frame_width + cell_width  / 2,
     cy: frame_width + cell_height / 2,
-    r: s_r,
+    r: stone_radius,
     fill: 'white'
   });
   onmouse_white.setAttribute('fill-opacity', 0);
@@ -328,8 +328,8 @@ function flip_stone(flip_que, color1, color2) {
 }
 
 function flip_stone1(flip_que, ang, color1, color2) {
-  var dr = s_r * Math.cos(ang * Math.PI / 180);
-  var dh = s_h * Math.sin(ang * Math.PI / 180);
+  var dr = stone_radius * Math.cos(ang * Math.PI / 180);
+  var dh = stone_thickness * Math.sin(ang * Math.PI / 180);
 
   for (var k = 0; k < flip_que.length; k++) {
     var i = flip_que[k][0];
@@ -356,8 +356,8 @@ function flip_stone2(flip_que, ang, color1, color2) {
     return;
   }
 
-  var dr = s_r * Math.cos(ang * Math.PI / 180);
-  var dh = s_h * Math.sin(ang * Math.PI / 180);
+  var dr = stone_radius * Math.cos(ang * Math.PI / 180);
+  var dh = stone_thickness * Math.sin(ang * Math.PI / 180);
 
   for (var k = 0; k < flip_que.length; k++) {
     var i = flip_que[k][0];
@@ -379,18 +379,18 @@ function rotate1(i, j, dr, dh, color1, color2) {
   var right  = stone_r[i][j];
 
   var x = 10 + 40 + 80 * (i - 1);
-  var y = 10 + 40 + 80 * (j - 1) - s_r;
+  var y = 10 + 40 + 80 * (j - 1) - stone_radius;
 
   var d_left   = 'M' + (x - dh) + ',' + y;
   var d_center = 'M' + x + ',' + y;
   var d_right  = 'M' + (x + dh) + ',' + y;
 
-  d_left   += ' h' + dh + ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (2 * s_r);
-  d_left   += ' h' + (-dh) + ' a' + dr + ',' + s_r + ' 0 0,1 0,' + (-2 * s_r);
-  d_center += ' h' + dh + ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (2 * s_r);
-  d_center += ' h' + (-dh) + ' a' + dr + ',' + s_r + ' 0 0,1 0,' + (-2 * s_r);
-  d_right  += ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (2 * s_r);
-  d_right  += ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (-2 * s_r);
+  d_left   += ' h' + dh + ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (2 * stone_radius);
+  d_left   += ' h' + (-dh) + ' a' + dr + ',' + stone_radius + ' 0 0,1 0,' + (-2 * stone_radius);
+  d_center += ' h' + dh + ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (2 * stone_radius);
+  d_center += ' h' + (-dh) + ' a' + dr + ',' + stone_radius + ' 0 0,1 0,' + (-2 * stone_radius);
+  d_right  += ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (2 * stone_radius);
+  d_right  += ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (-2 * stone_radius);
 
   left.setAttribute('d', d_left);
   center.setAttribute('d', d_center);
@@ -407,18 +407,18 @@ function rotate2(i, j, dr, dh, color1, color2) {
   var right  = stone_r[i][j];
 
   var x = 10 + 40 + 80 * (i - 1);
-  var y = 10 + 40 + 80 * (j - 1) - s_r;
+  var y = 10 + 40 + 80 * (j - 1) - stone_radius;
 
   var d_left = 'M' + (x - dh) + ',' + y;
   var d_center = 'M' + x + ',' + y;
   var d_right = 'M' + (x + dh) + ',' + y;
 
-  d_left   += ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (2 * s_r);
-  d_left   += ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (-2 * s_r);
-  d_center += ' h' + (-dh) + ' a' + dr + ',' + s_r + ' 0 0,1 0,' + (2 * s_r);
-  d_center += ' h' + dh + ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (-2 * s_r);
-  d_right  += ' h' + (-dh) + ' a' + dr + ',' + s_r + ' 0 0,1 0,' + (2 * s_r);
-  d_right  += ' h' + dh + ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (-2 * s_r);
+  d_left   += ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (2 * stone_radius);
+  d_left   += ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (-2 * stone_radius);
+  d_center += ' h' + (-dh) + ' a' + dr + ',' + stone_radius + ' 0 0,1 0,' + (2 * stone_radius);
+  d_center += ' h' + dh + ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (-2 * stone_radius);
+  d_right  += ' h' + (-dh) + ' a' + dr + ',' + stone_radius + ' 0 0,1 0,' + (2 * stone_radius);
+  d_right  += ' h' + dh + ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (-2 * stone_radius);
 
   left.setAttribute('d', d_left);
   center.setAttribute('d', d_center);
