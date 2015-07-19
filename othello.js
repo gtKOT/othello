@@ -1,10 +1,12 @@
 'use strict';
 
-var ns = 'http://www.w3.org/2000/svg';
+var svg_util = window.nSatohOthello.svgUtil;
+
 var board_green = 'rgb(32,128,32)';
 
 var half_size = 4;
 var size = half_size * 2;
+
 
 //-- 各セルの現在の状態記録用 -------------------
 var BLACK = 0;
@@ -35,7 +37,7 @@ var BLACK_TURN = BLACK;
 var WHITE_TURN = WHITE;
 
 var turn = BLACK_TURN;
-var rect = []; //各セル
+var rects = []; //各セル
 
 /** @type {SVGCircleElement} オンマウス時の半透明黒石 */
 var onmouse_black;
@@ -47,75 +49,77 @@ var onmouse_j = 0;
 var dt = 0.1; // 石の回転アニメーションの間隔ミリ秒
 var d_ang = 6; // 石の回転アニメーションの角度ステップ
 
+
 function set_board(evt) {
-  var doc = evt.target.ownerDocument;
   var svgsvg = evt.target;
-  var i, j, k, x, y, fill;
+  var i, j, x, y, fill;
+
+  var cell_width  = 80;
+  var cell_height = 80;
 
   //-- 各セルを個別の正方形として作成．クリック時のイベント処理のため．--------------------
   for (i = 1; i < size + 1; i++) {
-    rect[i] = [null];
+    rects[i] = [];
+
     for (j = 1; j < size + 1; j++) {
-      k = (size + 2) * i + j;
-      rect[i][j] = doc.createElementNS(ns, 'rect');
-      x = 10 + 80 * (i - 1);
-      y = 10 + 80 * (j - 1);
-      rect[i][j].setAttribute('x', x);
-      rect[i][j].setAttribute('y', y);
-      rect[i][j].setAttribute('width', '80');
-      rect[i][j].setAttribute('height', '80');
-      rect[i][j].setAttribute('fill', board_green);
-      rect[i][j].setAttribute('id', k);
-      rect[i][j].setAttribute('onmouseover', 'on_mouse_over(evt)');
-      rect[i][j].setAttribute('onclick', 'on_click(evt)');
-      svgsvg.appendChild(rect[i][j]);
+      var rect = svg_util.createRect({
+        id: (size + 2) * i + j,
+        x: 10 + cell_width  * (i - 1),
+        y: 10 + cell_height * (j - 1),
+        width : cell_width,
+        height: cell_height,
+        fill: board_green
+      });
+      rect.onmouseover = on_mouse_over;
+      rect.onclick = on_click;
+      svgsvg.appendChild(rect);
+
+      rects[i][j] = rect;
     }
   }
 
   //--- 罫線 -------------------------------------------
-  var line;
   for (i = 0; i < size; i++) {
-    line = doc.createElementNS(ns, 'line');
-    line.setAttribute('x1', 90 + 80 * i);
-    line.setAttribute('y1', 10);
-    line.setAttribute('x2', 90 + 80 * i);
-    line.setAttribute('y2', 10 + 80 * size);
-    line.setAttribute('stroke', 'black');
-    line.setAttribute('stroke-width', 2);
-    svgsvg.appendChild(line);
+    svgsvg.appendChild(svg_util.createLine({
+      x1: (10 + cell_width) + cell_width * i,
+      y1: 10,
+      x2: (10 + cell_width) + cell_width * i,
+      y2: 10 + cell_height * size,
+      stroke: 'black',
+      'stroke-color': 2
+    }));
   }
   for (i = 0; i < size; i++) {
-    line = doc.createElementNS(ns, 'line');
-    line.setAttribute('x1', 10);
-    line.setAttribute('y1', 90 + 80 * i);
-    line.setAttribute('x2', 10 + 80 * size);
-    line.setAttribute('y2', 90 + 80 * i);
-    line.setAttribute('stroke', 'black');
-    line.setAttribute('stroke-width', 2);
-    svgsvg.appendChild(line);
+    svgsvg.appendChild(svg_util.createLine({
+      x1: 10,
+      y1: (10 + cell_width) + cell_width * i,
+      x2: 10 + cell_height * size,
+      y2: (10 + cell_width) + cell_width * i,
+      stroke: 'black',
+      'stroke-color': 2
+    }));
   }
 
   //-- 外枠 --------------------------------------------
-  line = doc.createElementNS(ns, 'rect');
-  line.setAttribute('x', 10);
-  line.setAttribute('y', 10);
-  line.setAttribute('width', 80 * size);
-  line.setAttribute('height', 80 * size);
-  line.setAttribute('fill', 'none');
-  line.setAttribute('stroke', 'black');
-  line.setAttribute('stroke-width', 5);
-  svgsvg.appendChild(line);
+  svgsvg.appendChild(svg_util.createRect({
+    x: 10,
+    y: 10,
+    width : cell_width * size,
+    height: cell_height * size,
+    fill: 'none',
+    stroke: 'black',
+    'stroke-width': 5
+  }));
 
   //--- 4箇所のドット ----------------------------------
-  var dot;
   for (i = 0; i < 2; i++) {
     for (j = 0; j < 2; j++) {
-      dot = doc.createElementNS(ns, 'circle');
-      dot.setAttribute('cx', 170 + 80 * half_size * i);
-      dot.setAttribute('cy', 170 + 80 * half_size * j);
-      dot.setAttribute('r', 5);
-      dot.setAttribute('fill', 'black');
-      svgsvg.appendChild(dot);
+      svgsvg.appendChild(svg_util.createCircle({
+        cx: (10 + cell_width  * 2) + cell_width  * half_size * i,
+        cy: (10 + cell_height * 2) + cell_height * half_size * j,
+        r: 5,
+        fill: 'black'
+      }));
     }
   }
 
@@ -123,21 +127,12 @@ function set_board(evt) {
   var st_l, st_c, st_r, dr, dh, d_left, d_center, d_right;
 
   for (i = 1; i < size + 1; i++) {
-
     stone_l[i] = [];
     stone_c[i] = [];
     stone_r[i] = [];
     for (j = 1; j < size + 1; j++) {
-      x = 10 + 40 + 80 * (i - 1);
-      y = 10 + 40 + 80 * (j - 1) - s_r;
-
-      stone_l[i][j] = document.createElementNS(ns, 'path');
-      stone_c[i][j] = document.createElementNS(ns, 'path');
-      stone_r[i][j] = document.createElementNS(ns, 'path');
-
-      st_l = stone_l[i][j];
-      st_c = stone_c[i][j];
-      st_r = stone_r[i][j];
+      x = 10 + cell_width  / 2 + cell_width  * (i - 1);
+      y = 10 + cell_height / 2 + cell_height * (j - 1) - s_r;
 
       dr = s_r * Math.cos(0);
       dh = s_h * Math.sin(0);
@@ -153,29 +148,25 @@ function set_board(evt) {
       d_right  += ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (2 * s_r);
       d_right  += ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (-2 * s_r);
 
-      st_l.setAttribute('d', d_left);
-      st_c.setAttribute('d', d_center);
-      st_r.setAttribute('d', d_right);
-
-      st_l.setAttribute('fill', 'black');
-      st_c.setAttribute('fill', 'white');
-      st_r.setAttribute('fill', 'white');
-
-      st_l.setAttribute('fill-opacity', '0');
-      st_c.setAttribute('fill-opacity', '0');
-      st_r.setAttribute('fill-opacity', '0');
+      st_l = svg_util.createPath({d: d_left,   fill: 'black', 'fill-opacity': 0});
+      st_c = svg_util.createPath({d: d_center, fill: 'white', 'fill-opacity': 0});
+      st_r = svg_util.createPath({d: d_right,  fill: 'white', 'fill-opacity': 0});
 
       svgsvg.appendChild(st_l);
       svgsvg.appendChild(st_c);
       svgsvg.appendChild(st_r);
+
+      stone_l[i][j] = st_l;
+      stone_c[i][j] = st_c;
+      stone_r[i][j] = st_r;
     }
   }
 
   for (i = half_size; i < half_size + 2; i++) {
     for (j = half_size; j < half_size + 2; j++) {
-      stone_l[i][j].setAttribute('fill-opacity', '1');
-      stone_c[i][j].setAttribute('fill-opacity', '1');
-      stone_r[i][j].setAttribute('fill-opacity', '1');
+      stone_l[i][j].setAttribute('fill-opacity', 1);
+      stone_c[i][j].setAttribute('fill-opacity', 1);
+      stone_r[i][j].setAttribute('fill-opacity', 1);
     }
   }
   stone_r[half_size][half_size].setAttribute('fill', 'black');
@@ -183,24 +174,25 @@ function set_board(evt) {
 
 
   //-- マウスオーバー時に表示させる半透明の石 ----------
-  onmouse_black = doc.createElementNS(ns, 'circle');
-  onmouse_black.setAttribute('cx', 10 + 40);
-  onmouse_black.setAttribute('cy', 10 + 40);
-  onmouse_black.setAttribute('r', 30);
-  onmouse_black.setAttribute('fill', 'black');
-  onmouse_black.setAttribute('fill-opacity', '0');
-  onmouse_black.setAttribute('onclick', 'on_click_circle(evt)');
+  onmouse_black = svg_util.createCircle({
+    cx: 10 + cell_width  / 2,
+    cy: 10 + cell_height / 2,
+    r: 30,
+    fill: 'black'
+  });
+  onmouse_black.setAttribute('fill-opacity', 0);
+  onmouse_black.onclick = on_click_circle;
   svgsvg.appendChild(onmouse_black);
 
-  onmouse_white = doc.createElementNS(ns, 'circle');
-  onmouse_white.setAttribute('cx', 10 + 40);
-  onmouse_white.setAttribute('cy', 10 + 40);
-  onmouse_white.setAttribute('r', 30);
-  onmouse_white.setAttribute('fill', 'white');
-  onmouse_white.setAttribute('fill-opacity', '0');
-  onmouse_white.setAttribute('onclick', 'on_click_circle(evt)');
+  onmouse_white = svg_util.createCircle({
+    cx: 10 + cell_width  / 2,
+    cy: 10 + cell_height / 2,
+    r: 30,
+    fill: 'white'
+  });
+  onmouse_white.setAttribute('fill-opacity', 0);
+  onmouse_white.onclick = on_click_circle;
   svgsvg.appendChild(onmouse_white);
-
 }
 
 
