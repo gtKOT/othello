@@ -2,4 +2,4 @@
 
   global.nSatohOthello = global.nSatohOthello || {};
 
-})(document);
+})(window);
