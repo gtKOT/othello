@@ -167,16 +167,18 @@ function draw_stones(board_svg, frame_width, cell_width, cell_height) {
     }
   }
 
-  for (i = half_size; i < half_size + 2; i++) {
-    for (j = half_size; j < half_size + 2; j++) {
+  for (i = 0; i < cell.length; i++) {
+    for (j = 0; j < cell[i].length; j++) {
+      if (cell[i][j] === EMPTY) {
+        continue;
+      }
+      var stone_color = (cell[i][j] === BLACK) ? 'black' : 'white';
+      stone_r[i][j].setAttribute('fill', stone_color);
       stone_l[i][j].setAttribute('fill-opacity', 1);
       stone_c[i][j].setAttribute('fill-opacity', 1);
       stone_r[i][j].setAttribute('fill-opacity', 1);
     }
   }
-  stone_r[half_size][half_size].setAttribute('fill', 'black');
-  stone_r[half_size + 1][half_size + 1].setAttribute('fill', 'black');
-
 
   //-- マウスオーバー時に表示させる半透明の石 ----------
   helper_stone = svg_util.createCircle({
@@ -397,9 +399,9 @@ function rotate2(i, j, dr, dh, color1, color2) {
   var x = 10 + 40 + 80 * (i - 1);
   var y = 10 + 40 + 80 * (j - 1) - stone_radius;
 
-  var d_left = 'M' + (x - dh) + ',' + y;
+  var d_left   = 'M' + (x - dh) + ',' + y;
   var d_center = 'M' + x + ',' + y;
-  var d_right = 'M' + (x + dh) + ',' + y;
+  var d_right  = 'M' + (x + dh) + ',' + y;
 
   d_left   += ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (2 * stone_radius);
   d_left   += ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (-2 * stone_radius);
