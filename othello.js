@@ -6,18 +6,22 @@ var board_green = 'rgb(32,128,32)';
 var size = 4; // half-size
 
 //-- 各セルの現在の状態記録用 -------------------
+var BLACK = 0;
+var WHITE = 1;
+var EMPTY = -1;
+
 var cell = [];
 for (var i = 0; i < size * 2 + 2; i++) {
   cell[i] = [];
   for (var j = 0; j < size * 2 + 2; j++) {
-    cell[i][j] = -1; // -1:None, 0:Black, 1:White
+    cell[i][j] = EMPTY;
   }
 }
 
-cell[size][size] = 0;
-cell[size][size + 1] = 1;
-cell[size + 1][size] = 1;
-cell[size + 1][size + 1] = 0;
+cell[size][size] = BLACK;
+cell[size][size + 1] = WHITE;
+cell[size + 1][size] = WHITE;
+cell[size + 1][size + 1] = BLACK;
 
 //-- セルに配置された石：回転アニメーションのために3パーツに分割 -------------------
 var stone_l = [];
@@ -26,7 +30,10 @@ var stone_r = [];
 var s_r = 30; // 石の半径
 var s_h = 10;  // 石の厚み半分
 
-var turn = 0;
+var BLACK_TURN = BLACK;
+var WHITE_TURN = WHITE;
+
+var turn = BLACK_TURN;
 var rect = []; //各セル
 
 var onmouse_black; // オンマウス時の半透明黒石
@@ -201,8 +208,8 @@ function on_mouse_over(evt) {
   var i = (id - j) / (size * 2 + 2);
   onmouse_i = i;
   onmouse_j = j;
-  if (cell[i][j] === -1) {
-    if (turn === 0) {
+  if (cell[i][j] === EMPTY) {
+    if (turn === BLACK_TURN) {
       onmouse_black.setAttribute('cx', 10 + 40 + (i - 1) * 80);
       onmouse_black.setAttribute('cy', 10 + 40 + (j - 1) * 80);
       onmouse_black.setAttribute('fill-opacity', '0.5');
@@ -234,7 +241,7 @@ function on_click_circle() {
 
 function click(i, j) {
   var color1, color2, flip_que;
-  if (turn === 0) {
+  if (turn === BLACK_TURN) {
     color1 = 'black';
     color2 = 'white';
   }
@@ -242,7 +249,7 @@ function click(i, j) {
     color1 = 'white';
     color2 = 'black';
   }
-  if (cell[i][j] === -1) {
+  if (cell[i][j] === EMPTY) {
     flip_que = check_stone(i, j, turn);
     if (flip_que.length > 0) {
       cell[i][j] = turn;
@@ -443,10 +450,10 @@ function pass_color_reset() {
 
 function turn_coloring(turn) {
   var turn_stone = document.getElementById('turn_stone');
-  if (turn === 1) {
-    turn_stone.setAttribute('fill', 'white');
+  if (turn === BLACK_TURN) {
+    turn_stone.setAttribute('fill', 'black');
   }
   else {
-    turn_stone.setAttribute('fill', 'black');
+    turn_stone.setAttribute('fill', 'white');
   }
 }
