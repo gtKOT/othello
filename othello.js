@@ -1,3 +1,5 @@
+'use strict';
+
 var ns = 'http://www.w3.org/2000/svg';
 var board_green = 'rgb(32,128,32)';
 
