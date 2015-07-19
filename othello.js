@@ -3,7 +3,7 @@ var board_green = 'rgb(32,128,32)';
 
 var size = 4; // half-size
 
-//-- ŠeƒZƒ‹‚ÌŒ»İ‚Ìó‘Ô‹L˜^—p -------------------
+//-- å„ã‚»ãƒ«ã®ç¾åœ¨ã®çŠ¶æ…‹è¨˜éŒ²ç”¨ -------------------
 var cell = [];
 for (var i = 0; i < size * 2 + 2; i++) {
   cell[i] = [];
@@ -17,30 +17,30 @@ cell[size][size + 1] = 1;
 cell[size + 1][size] = 1;
 cell[size + 1][size + 1] = 0;
 
-//-- ƒZƒ‹‚É”z’u‚³‚ê‚½ÎF‰ñ“]ƒAƒjƒ[ƒVƒ‡ƒ“‚Ì‚½‚ß‚É3ƒp[ƒc‚É•ªŠ„ -------------------
+//-- ã‚»ãƒ«ã«é…ç½®ã•ã‚ŒãŸçŸ³ï¼šå›è»¢ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®ãŸã‚ã«3ãƒ‘ãƒ¼ãƒ„ã«åˆ†å‰² -------------------
 var stone_l = [];
 var stone_c = [];
 var stone_r = [];
-var s_r = 30; // Î‚Ì”¼Œa
-var s_h = 10;  // Î‚ÌŒú‚İ”¼•ª
+var s_r = 30; // çŸ³ã®åŠå¾„
+var s_h = 10;  // çŸ³ã®åšã¿åŠåˆ†
 
 var turn = 0;
-var rect = []; //ŠeƒZƒ‹
+var rect = []; //å„ã‚»ãƒ«
 
-var onmouse_black; // ƒIƒ“ƒ}ƒEƒX‚Ì”¼“§–¾•Î
-var onmouse_white; // ”¼“§–¾”’Î
+var onmouse_black; // ã‚ªãƒ³ãƒã‚¦ã‚¹æ™‚ã®åŠé€æ˜é»’çŸ³
+var onmouse_white; // åŠé€æ˜ç™½çŸ³
 var onmouse_i = 0;
 var onmouse_j = 0;
 
-var dt = 0.1; // Î‚Ì‰ñ“]ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌŠÔŠuƒ~ƒŠ•b
-var d_ang = 6; // Î‚Ì‰ñ“]ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌŠp“xƒXƒeƒbƒv
+var dt = 0.1; // çŸ³ã®å›è»¢ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®é–“éš”ãƒŸãƒªç§’
+var d_ang = 6; // çŸ³ã®å›è»¢ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®è§’åº¦ã‚¹ãƒ†ãƒƒãƒ—
 
 function set_board(evt) {
   var doc = evt.target.ownerDocument;
   var svgsvg = evt.target;
   var i, j, k, x, y, fill;
 
-  //-- ŠeƒZƒ‹‚ğŒÂ•Ê‚Ì³•ûŒ`‚Æ‚µ‚Äì¬DƒNƒŠƒbƒN‚ÌƒCƒxƒ“ƒgˆ—‚Ì‚½‚ßD--------------------
+  //-- å„ã‚»ãƒ«ã‚’å€‹åˆ¥ã®æ­£æ–¹å½¢ã¨ã—ã¦ä½œæˆï¼ã‚¯ãƒªãƒƒã‚¯æ™‚ã®ã‚¤ãƒ™ãƒ³ãƒˆå‡¦ç†ã®ãŸã‚ï¼--------------------
   for (i = 1; i < size * 2 + 1; i++) {
     rect[i] = [null];
     for (j = 1; j < size * 2 + 1; j++) {
@@ -61,7 +61,7 @@ function set_board(evt) {
     }
   }
 
-  //--- Œrü -------------------------------------------
+  //--- ç½«ç·š -------------------------------------------
   var line;
   for (i = 0; i < size * 2; i++) {
     line = doc.createElementNS(ns, 'line');
@@ -84,7 +84,7 @@ function set_board(evt) {
     svgsvg.appendChild(line);
   }
 
-  //-- ŠO˜g --------------------------------------------
+  //-- å¤–æ  --------------------------------------------
   line = doc.createElementNS(ns, 'rect');
   line.setAttribute('x', 10);
   line.setAttribute('y', 10);
@@ -95,7 +95,7 @@ function set_board(evt) {
   line.setAttribute('stroke-width', 5);
   svgsvg.appendChild(line);
 
-  //--- 4‰ÓŠ‚Ìƒhƒbƒg ----------------------------------
+  //--- 4ç®‡æ‰€ã®ãƒ‰ãƒƒãƒˆ ----------------------------------
   var dot;
   for (i = 0; i < 2; i++) {
     for (j = 0; j < 2; j++) {
@@ -108,7 +108,7 @@ function set_board(evt) {
     }
   }
 
-  //--- ŠeƒZƒ‹‚ÌÎF‰ñ“]ƒAƒjƒ[ƒVƒ‡ƒ“‚Ì‚½‚ß‚É3ƒp[ƒc‚É•ªŠ„ ----------------------------------
+  //--- å„ã‚»ãƒ«ã®çŸ³ï¼šå›è»¢ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®ãŸã‚ã«3ãƒ‘ãƒ¼ãƒ„ã«åˆ†å‰² ----------------------------------
   var st_l, st_c, st_r, dr, dh, d_left, d_center, d_right;
 
   for (i = 1; i < size * 2 + 1; i++) {
@@ -171,7 +171,7 @@ function set_board(evt) {
   stone_r[size + 1][size + 1].setAttribute('fill', 'black');
 
 
-  //-- ƒ}ƒEƒXƒI[ƒo[‚É•\¦‚³‚¹‚é”¼“§–¾‚ÌÎ ----------
+  //-- ãƒã‚¦ã‚¹ã‚ªãƒ¼ãƒãƒ¼æ™‚ã«è¡¨ç¤ºã•ã›ã‚‹åŠé€æ˜ã®çŸ³ ----------
   onmouse_black = doc.createElementNS(ns, 'circle');
   onmouse_black.setAttribute('cx', 10 + 40);
   onmouse_black.setAttribute('cy', 10 + 40);
@@ -268,7 +268,7 @@ function check_stone(i, j, turn) {
       ci = i + di;
       cj = j + dj;
       next = cell[ci][cj];
-      if (next === another) { // di=dj=0 ‚Í‚±‚±‚ÅœŠO‚³‚ê‚é
+      if (next === another) { // di=dj=0 ã¯ã“ã“ã§é™¤å¤–ã•ã‚Œã‚‹
         cnt = 0;
         while (next === another) {
           ci += di;
@@ -315,8 +315,8 @@ function coloring_stone(i, j, color) {
 }
 
 function flip_stone(flip_que, color1, color2) {
-  onmouse_black.setAttribute('fill-opacity', '0'); // ”¼“§–¾Î‚ª•Ï‚ÈˆÊ’u‚É
-  onmouse_white.setAttribute('fill-opacity', '0'); // •\¦‚³‚ê‚é‚Ì‚ğ–h‚®‚½‚ß
+  onmouse_black.setAttribute('fill-opacity', '0'); // åŠé€æ˜çŸ³ãŒå¤‰ãªä½ç½®ã«
+  onmouse_white.setAttribute('fill-opacity', '0'); // è¡¨ç¤ºã•ã‚Œã‚‹ã®ã‚’é˜²ããŸã‚
 
   var ang = 0;
   flip_stone1(flip_que, ang, color1, color2);
@@ -337,12 +337,12 @@ function flip_stone1(flip_que, ang, color1, color2) {
   if (ang === 90) {
     setTimeout(function() {
       flip_stone2(flip_que, ang, color1, color2);
-    }, dt); //ƒ^ƒCƒ}[ƒZƒbƒgDdtƒ~ƒŠ•b‚²‚Æ‚É1ƒXƒeƒbƒvÀs
+    }, dt); //ã‚¿ã‚¤ãƒãƒ¼ã‚»ãƒƒãƒˆï¼dtãƒŸãƒªç§’ã”ã¨ã«1ã‚¹ãƒ†ãƒƒãƒ—å®Ÿè¡Œ
   }
   else {
     setTimeout(function() {
       flip_stone1(flip_que, ang, color1, color2);
-    }, dt); //ƒ^ƒCƒ}[ƒZƒbƒgDdtƒ~ƒŠ•b‚²‚Æ‚É1ƒXƒeƒbƒvÀs
+    }, dt); //ã‚¿ã‚¤ãƒãƒ¼ã‚»ãƒƒãƒˆï¼dtãƒŸãƒªç§’ã”ã¨ã«1ã‚¹ãƒ†ãƒƒãƒ—å®Ÿè¡Œ
   }
 }
 
@@ -364,7 +364,7 @@ function flip_stone2(flip_que, ang, color1, color2) {
 
   setTimeout(function() {
     flip_stone2(flip_que, ang, color1, color2);
-  }, dt); //ƒ^ƒCƒ}[ƒZƒbƒgDdtƒ~ƒŠ•b‚²‚Æ‚É1ƒXƒeƒbƒvÀs
+  }, dt); //ã‚¿ã‚¤ãƒãƒ¼ã‚»ãƒƒãƒˆï¼dtãƒŸãƒªç§’ã”ã¨ã«1ã‚¹ãƒ†ãƒƒãƒ—å®Ÿè¡Œ
 }
 
 
