@@ -38,12 +38,10 @@ var WHITE_TURN = WHITE;
 
 var turn = BLACK_TURN;
 
-/** @type {SVGCircleElement} オンマウス時の半透明黒石 */
-var onmouse_black;
-/** @type {SVGCircleElement} 半透明白石 */
-var onmouse_white;
-var onmouse_i = 0;
-var onmouse_j = 0;
+/** @type {SVGCircleElement} オンマウス時の半透明石 */
+var helper_stone;
+var helper_stone_i = 0;
+var helper_stone_j = 0;
 
 var dt = 0.1; // 石の回転アニメーションの間隔ミリ秒
 var d_ang = 6; // 石の回転アニメーションの角度ステップ
@@ -181,58 +179,51 @@ function draw_stones(board_svg, frame_width, cell_width, cell_height) {
 
 
   //-- マウスオーバー時に表示させる半透明の石 ----------
-  onmouse_black = svg_util.createCircle({
+  helper_stone = svg_util.createCircle({
     cx: frame_width + cell_width  / 2,
     cy: frame_width + cell_height / 2,
     r: stone_radius,
     fill: 'black'
   });
-  onmouse_black.setAttribute('fill-opacity', 0);
-  onmouse_black.onclick = on_click_circle;
-  board_svg.appendChild(onmouse_black);
+  helper_stone.setAttribute('fill-opacity', 0);
+  helper_stone.onclick = on_click_circle;
+  board_svg.appendChild(helper_stone);
+}
 
-  onmouse_white = svg_util.createCircle({
-    cx: frame_width + cell_width  / 2,
-    cy: frame_width + cell_height / 2,
-    r: stone_radius,
-    fill: 'white'
-  });
-  onmouse_white.setAttribute('fill-opacity', 0);
-  onmouse_white.onclick = on_click_circle;
-  board_svg.appendChild(onmouse_white);
+
+function to_pos(id) {
+  var j = id % (size + 2);
+  var i = (id - j) / (size + 2);
+  return { i: i, j: j };
 }
 
 
 function on_mouse_over(evt) {
-  var id = evt.target.id;
-  var j = id % (size + 2);
-  var i = (id - j) / (size + 2);
-  onmouse_i = i;
-  onmouse_j = j;
+  var pos = to_pos(evt.target.id);
+  var i = pos.i;
+  var j = pos.j;
+  helper_stone_i = i;
+  helper_stone_j = j;
   if (cell[i][j] === EMPTY) {
-    if (turn === BLACK_TURN) {
-      onmouse_black.setAttribute('cx', 10 + 40 + (i - 1) * 80);
-      onmouse_black.setAttribute('cy', 10 + 40 + (j - 1) * 80);
-      onmouse_black.setAttribute('fill-opacity', '0.5');
-    }
-    else {
-      onmouse_white.setAttribute('cx', 10 + 40 + (i - 1) * 80);
-      onmouse_white.setAttribute('cy', 10 + 40 + (j - 1) * 80);
-      onmouse_white.setAttribute('fill-opacity', '0.5');
-    }
+    var stone_color = (turn === BLACK_TURN) ? 'black' : 'white';
+    helper_stone.setAttribute('fill', stone_color);
+    helper_stone.setAttribute('cx', 10 + 40 + (i - 1) * 80);
+    helper_stone.setAttribute('cy', 10 + 40 + (j - 1) * 80);
+    helper_stone.setAttribute('fill-opacity', 0.5);
   }
 }
 
-function on_click(evt) {
-  var id = evt.target.id;
-  var j = id % (size + 2);
-  var i = (id - j) / (size + 2);
+function vanish_helper_stone() {
+  helper_stone.setAttribute('fill-opacity', 0);
+}
 
-  click(i, j);
+function on_click(evt) {
+  var pos = to_pos(evt.target.id);
+  click(pos.i, pos.j);
 }
 
 function on_click_circle() {
-  click(onmouse_i, onmouse_j);
+  click(helper_stone_i, helper_stone_j);
 }
 
 function click(i, j) {
@@ -320,9 +311,6 @@ function coloring_stone(i, j, color) {
 }
 
 function flip_stone(flip_que, color1, color2) {
-  onmouse_black.setAttribute('fill-opacity', '0'); // 半透明石が変な位置に
-  onmouse_white.setAttribute('fill-opacity', '0'); // 表示されるのを防ぐため
-
   var ang = 0;
   flip_stone1(flip_que, ang, color1, color2);
 }
