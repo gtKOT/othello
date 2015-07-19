@@ -27,12 +27,12 @@ cells[half_size + 1][half_size] = WHITE;
 cells[half_size + 1][half_size + 1] = BLACK;
 
 //-- AI実装のための準備 --
-var player = [];
+var players = [];
 
 var HUMAN = 0;
 var CPU = 1;
-player[WHITE] = HUMAN;
-player[BLACK] = HUMAN;
+players[WHITE] = HUMAN;
+players[BLACK] = HUMAN;
 
 var pass_flag = [0, 0];
 
@@ -265,7 +265,7 @@ function on_click_circle() {
 }
 
 function click(i, j) {
-  if (player[turn] === HUMAN) {
+  if (players[turn] === HUMAN) {
     var color1, color2, flip_que;
     if (turn === BLACK_TURN) {
       color1 = 'black';
@@ -481,7 +481,7 @@ function rotate2(i, j, dr, dh, color1, color2) {
 
 
 function pass() {
-  if (player[turn] === HUMAN) {
+  if (players[turn] === HUMAN) {
     var pass_button = document.getElementById('pass');
     pass_button.setAttribute('fill', 'pink');
     turn++;
@@ -509,5 +509,5 @@ function turn_coloring(turn) {
 }
 
 function player_change(color, value){
-  player[color] = value;
+  players[color] = value;
 }
