@@ -199,8 +199,8 @@ function on_mouse_over(evt) {
   var i = (id - j) / (size * 2 + 2);
   onmouse_i = i;
   onmouse_j = j;
-  if (cell[i][j] == -1) {
-    if (turn == 0) {
+  if (cell[i][j] === -1) {
+    if (turn === 0) {
       onmouse_black.setAttribute('cx', 10 + 40 + (i - 1) * 80);
       onmouse_black.setAttribute('cy', 10 + 40 + (j - 1) * 80);
       onmouse_black.setAttribute('fill-opacity', '0.5');
@@ -232,7 +232,7 @@ function on_click_circle() {
 
 function click(i, j) {
   var color1, color2, flip_que;
-  if (turn == 0) {
+  if (turn === 0) {
     color1 = "black";
     color2 = "white";
   }
@@ -240,7 +240,7 @@ function click(i, j) {
     color1 = "white";
     color2 = "black";
   }
-  if (cell[i][j] == -1) {
+  if (cell[i][j] === -1) {
     flip_que = check_stone(i, j, turn);
     if (flip_que.length > 0) {
       cell[i][j] = turn;
@@ -268,15 +268,15 @@ function check_stone(i, j, turn) {
       ci = i + di;
       cj = j + dj;
       next = cell[ci][cj];
-      if (next == another) { // di=dj=0 はここで除外される
+      if (next === another) { // di=dj=0 はここで除外される
         cnt = 0;
-        while (next == another) {
+        while (next === another) {
           ci += di;
           cj += dj;
           next = cell[ci][cj];
           cnt++;
         }
-        if (next == itself) {
+        if (next === itself) {
           ti = i;
           tj = j;
           for (var k = 0; k < cnt; k++) {
@@ -295,7 +295,7 @@ function check_stone(i, j, turn) {
 function coloring_stone(i, j, color) {
   var color1 = color;
   var color2;
-  if (color == "black") {
+  if (color === "black") {
     color2 = "white";
   }
   else {
@@ -334,7 +334,7 @@ function flip_stone1(flip_que, ang, color1, color2) {
 
   ang += d_ang;
 
-  if (ang == 90) {
+  if (ang === 90) {
     setTimeout(function() {
       flip_stone2(flip_que, ang, color1, color2);
     }, dt); //タイマーセット．dtミリ秒ごとに1ステップ実行
@@ -441,7 +441,7 @@ function pass_color_reset() {
 
 function turn_coloring(turn) {
   var turn_stone = document.getElementById("turn_stone");
-  if (turn == 1) {
+  if (turn === 1) {
     turn_stone.setAttribute("fill", "white");
   }
   else {
