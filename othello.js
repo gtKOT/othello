@@ -431,7 +431,7 @@ function pass() {
   turn++;
   turn %= 2;
   turn_coloring(turn);
-  setTimeout("pass_color_reset()", 100);
+  setTimeout(pass_color_reset, 100);
 }
 
 function pass_color_reset() {
