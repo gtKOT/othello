@@ -10,6 +10,28 @@
 <script src="svg-util.js"></script>
 <script src="othello.js"></script>
 
+
+<form>
+<p>
+<h1>
+黒番：　
+<input type="radio" name="black_player" value="0" onClick="player_change(0,0)" checked="checked">人間
+<input type="radio" name="black_player" value="0" onClick="player_change(0,1)">CPU<br>
+</h1>
+</p>
+</form>
+
+<form>
+<p>
+<h1>
+白番：　
+<input type="radio" name="white_player" value="0" onClick="player_change(1,0)" checked="checked">人間
+<input type="radio" name="white_player" value="0" onClick="player_change(1,1)">CPU<br>
+</h1>
+</p>
+</form>
+
+
 <svg xmlns="http://www.w3.org/2000/svg"
      width="1200" height="1200" viewBox="-100 -100 1000 1000"
      onload="set_board(evt)">

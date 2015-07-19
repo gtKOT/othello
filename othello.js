@@ -26,6 +26,17 @@ cell[half_size][half_size + 1] = WHITE;
 cell[half_size + 1][half_size] = WHITE;
 cell[half_size + 1][half_size + 1] = BLACK;
 
+//-- AI実装のための準備 --
+var player = [];
+
+var HUMAN = 0;
+var CPU = 1;
+player[WHITE] = HUMAN;
+player[BLACK] = HUMAN;
+
+var pass_flag = [0,0];
+
+
 //-- セルに配置された石：回転アニメーションのために3パーツに分割 -------------------
 var stone_l = [];
 var stone_c = [];
@@ -254,28 +265,30 @@ function on_click_circle() {
 }
 
 function click(i, j) {
-  var color1, color2, flip_que;
-  if (turn === BLACK_TURN) {
-    color1 = 'black';
-    color2 = 'white';
-  }
-  else {
-    color1 = 'white';
-    color2 = 'black';
-  }
-  if (cell[i][j] === EMPTY) {
-    flip_que = check_stone(i, j, turn);
-    if (flip_que.length > 0) {
-      cell[i][j] = turn;
-      coloring_stone(i, j, color1);
-      for (var k = 0; k < flip_que.length; k++) {
-        var ci = flip_que[k][0];
-        var cj = flip_que[k][1];
-        cell[ci][cj] = turn;
+  if (player[turn] === HUMAN) {
+    var color1, color2, flip_que;
+    if (turn === BLACK_TURN) {
+      color1 = 'black';
+      color2 = 'white';
+    }
+    else {
+      color1 = 'white';
+      color2 = 'black';
+    }
+    if (cell[i][j] === EMPTY) {
+      flip_que = check_stone(i, j, turn);
+      if (flip_que.length > 0) {
+        cell[i][j] = turn;
+        coloring_stone(i, j, color1);
+        for (var k = 0; k < flip_que.length; k++) {
+          var ci = flip_que[k][0];
+          var cj = flip_que[k][1];
+          cell[ci][cj] = turn;
+        }
+        flip_stone(flip_que, color1, color2);
+        turn++;
+        turn %= 2;
       }
-      flip_stone(flip_que, color1, color2);
-      turn++;
-      turn %= 2;
     }
   }
 }
@@ -468,13 +481,17 @@ function rotate2(i, j, dr, dh, color1, color2) {
 
 
 function pass() {
-  var pass_button = document.getElementById('pass');
-  pass_button.setAttribute('fill', 'pink');
-  turn++;
-  turn %= 2;
-  turn_coloring(turn);
-  setTimeout(pass_color_reset, 100);
+  if (player[turn] === HUMAN) {
+    var pass_button = document.getElementById('pass');
+    pass_button.setAttribute('fill', 'pink');
+    turn++;
+    turn %= 2;
+    turn_coloring(turn);
+    pass_flag[turn] = 1;
+    setTimeout(pass_color_reset, 100);
+  }
 }
+
 
 function pass_color_reset() {
   var pass_button = document.getElementById('pass');
@@ -489,4 +506,8 @@ function turn_coloring(turn) {
   else {
     turn_stone.setAttribute('fill', 'white');
   }
+}
+
+function player_change(color, value){
+  player[color] = value;
 }
