@@ -30,14 +30,13 @@ cell[half_size + 1][half_size + 1] = BLACK;
 var stone_l = [];
 var stone_c = [];
 var stone_r = [];
-var s_r = 30; // 石の半径
+var s_r = 30;  // 石の半径
 var s_h = 10;  // 石の厚み半分
 
 var BLACK_TURN = BLACK;
 var WHITE_TURN = WHITE;
 
 var turn = BLACK_TURN;
-var rects = []; //各セル
 
 /** @type {SVGCircleElement} オンマウス時の半透明黒石 */
 var onmouse_black;
@@ -59,8 +58,6 @@ function set_board(evt) {
 
   //-- 各セルを個別の正方形として作成．クリック時のイベント処理のため．--------------------
   for (i = 1; i < size + 1; i++) {
-    rects[i] = [];
-
     for (j = 1; j < size + 1; j++) {
       var rect = svg_util.createRect({
         id: (size + 2) * i + j,
@@ -73,8 +70,6 @@ function set_board(evt) {
       rect.onmouseover = on_mouse_over;
       rect.onclick = on_click;
       svgsvg.appendChild(rect);
-
-      rects[i][j] = rect;
     }
   }
 
