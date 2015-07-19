@@ -65,7 +65,6 @@ function set_board(evt) {
       rect[i][j].setAttribute('fill', board_green);
       rect[i][j].setAttribute('id', k);
       rect[i][j].setAttribute('onmouseover', 'on_mouse_over(evt)');
-      //rect[i][j].setAttribute('onmouseout', 'on_mouse_out(evt)');
       rect[i][j].setAttribute('onclick', 'on_click(evt)');
       svgsvg.appendChild(rect[i][j]);
     }
@@ -221,11 +220,6 @@ function on_mouse_over(evt) {
       onmouse_white.setAttribute('fill-opacity', '0.5');
     }
   }
-}
-
-function on_mouse_out() {
-  onmouse_black.setAttribute('fill-opacity', '0');
-  onmouse_white.setAttribute('fill-opacity', '0');
 }
 
 function on_click(evt) {
