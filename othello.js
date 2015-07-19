@@ -50,85 +50,13 @@ var d_ang = 6; // 石の回転アニメーションの角度ステップ
 
 
 function set_board(evt) {
-  var svgsvg = evt.target;
-  var i, j, x, y, fill;
-
   var frame_width = 10;
   var cell_width  = 80;
   var cell_height = 80;
 
+  var svgsvg = evt.target;
   draw_board(svgsvg, frame_width, cell_width, cell_height);
-
-  //--- 各セルの石：回転アニメーションのために3パーツに分割 ----------------------------------
-  var st_l, st_c, st_r, dr, dh, d_left, d_center, d_right;
-
-  for (i = 1; i < size + 1; i++) {
-    stone_l[i] = [];
-    stone_c[i] = [];
-    stone_r[i] = [];
-    for (j = 1; j < size + 1; j++) {
-      x = 10 + cell_width  / 2 + cell_width  * (i - 1);
-      y = 10 + cell_height / 2 + cell_height * (j - 1) - s_r;
-
-      dr = s_r * Math.cos(0);
-      dh = s_h * Math.sin(0);
-
-      d_left   = 'M' + (x - dh) + ',' + y;
-      d_center = 'M' + x + ',' + y;
-      d_right  = 'M' + (x + dh) + ',' + y;
-
-      d_left   += ' h' + dh + ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (2 * s_r);
-      d_left   += ' h' + (-dh) + ' a' + dr + ',' + s_r + ' 0 0,1 0,' + (-2 * s_r);
-      d_center += ' h' + dh + ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (2 * s_r);
-      d_center += ' h' + (-dh) + ' a' + dr + ',' + s_r + ' 0 0,1 0,' + (-2 * s_r);
-      d_right  += ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (2 * s_r);
-      d_right  += ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (-2 * s_r);
-
-      st_l = svg_util.createPath({d: d_left,   fill: 'black', 'fill-opacity': 0});
-      st_c = svg_util.createPath({d: d_center, fill: 'white', 'fill-opacity': 0});
-      st_r = svg_util.createPath({d: d_right,  fill: 'white', 'fill-opacity': 0});
-
-      svgsvg.appendChild(st_l);
-      svgsvg.appendChild(st_c);
-      svgsvg.appendChild(st_r);
-
-      stone_l[i][j] = st_l;
-      stone_c[i][j] = st_c;
-      stone_r[i][j] = st_r;
-    }
-  }
-
-  for (i = half_size; i < half_size + 2; i++) {
-    for (j = half_size; j < half_size + 2; j++) {
-      stone_l[i][j].setAttribute('fill-opacity', 1);
-      stone_c[i][j].setAttribute('fill-opacity', 1);
-      stone_r[i][j].setAttribute('fill-opacity', 1);
-    }
-  }
-  stone_r[half_size][half_size].setAttribute('fill', 'black');
-  stone_r[half_size + 1][half_size + 1].setAttribute('fill', 'black');
-
-
-  //-- マウスオーバー時に表示させる半透明の石 ----------
-  onmouse_black = svg_util.createCircle({
-    cx: 10 + cell_width  / 2,
-    cy: 10 + cell_height / 2,
-    r: 30,
-    fill: 'black'
-  });
-  onmouse_black.setAttribute('fill-opacity', 0);
-  onmouse_black.onclick = on_click_circle;
-  svgsvg.appendChild(onmouse_black);
-
-  onmouse_white = svg_util.createCircle({
-    cx: 10 + cell_width  / 2,
-    cy: 10 + cell_height / 2,
-    r: 30,
-    fill: 'white'
-  });
-  onmouse_white.setAttribute('fill-opacity', 0);
-  onmouse_white.onclick = on_click_circle;
-  svgsvg.appendChild(onmouse_white);
+  draw_stones(svgsvg, frame_width, cell_width, cell_height);
 }
 
 
@@ -196,6 +124,82 @@ function draw_board(board_svg, frame_width, cell_width, cell_height) {
       }));
     }
   }
+}
+
+
+function draw_stones(board_svg, frame_width, cell_width, cell_height) {
+  var i, j, x, y;
+
+  //--- 各セルの石：回転アニメーションのために3パーツに分割 ----------------------------------
+  var st_l, st_c, st_r, dr, dh, d_left, d_center, d_right;
+
+  for (i = 1; i < size + 1; i++) {
+    stone_l[i] = [];
+    stone_c[i] = [];
+    stone_r[i] = [];
+    for (j = 1; j < size + 1; j++) {
+      x = frame_width + cell_width  / 2 + cell_width  * (i - 1);
+      y = frame_width + cell_height / 2 + cell_height * (j - 1) - s_r;
+
+      dr = s_r * Math.cos(0);
+      dh = s_h * Math.sin(0);
+
+      d_left   = 'M' + (x - dh) + ',' + y;
+      d_center = 'M' + x + ',' + y;
+      d_right  = 'M' + (x + dh) + ',' + y;
+
+      d_left   += ' h' + dh + ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (2 * s_r);
+      d_left   += ' h' + (-dh) + ' a' + dr + ',' + s_r + ' 0 0,1 0,' + (-2 * s_r);
+      d_center += ' h' + dh + ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (2 * s_r);
+      d_center += ' h' + (-dh) + ' a' + dr + ',' + s_r + ' 0 0,1 0,' + (-2 * s_r);
+      d_right  += ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (2 * s_r);
+      d_right  += ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (-2 * s_r);
+
+      st_l = svg_util.createPath({d: d_left,   fill: 'black', 'fill-opacity': 0});
+      st_c = svg_util.createPath({d: d_center, fill: 'white', 'fill-opacity': 0});
+      st_r = svg_util.createPath({d: d_right,  fill: 'white', 'fill-opacity': 0});
+
+      board_svg.appendChild(st_l);
+      board_svg.appendChild(st_c);
+      board_svg.appendChild(st_r);
+
+      stone_l[i][j] = st_l;
+      stone_c[i][j] = st_c;
+      stone_r[i][j] = st_r;
+    }
+  }
+
+  for (i = half_size; i < half_size + 2; i++) {
+    for (j = half_size; j < half_size + 2; j++) {
+      stone_l[i][j].setAttribute('fill-opacity', 1);
+      stone_c[i][j].setAttribute('fill-opacity', 1);
+      stone_r[i][j].setAttribute('fill-opacity', 1);
+    }
+  }
+  stone_r[half_size][half_size].setAttribute('fill', 'black');
+  stone_r[half_size + 1][half_size + 1].setAttribute('fill', 'black');
+
+
+  //-- マウスオーバー時に表示させる半透明の石 ----------
+  onmouse_black = svg_util.createCircle({
+    cx: frame_width + cell_width  / 2,
+    cy: frame_width + cell_height / 2,
+    r: s_r,
+    fill: 'black'
+  });
+  onmouse_black.setAttribute('fill-opacity', 0);
+  onmouse_black.onclick = on_click_circle;
+  board_svg.appendChild(onmouse_black);
+
+  onmouse_white = svg_util.createCircle({
+    cx: frame_width + cell_width  / 2,
+    cy: frame_width + cell_height / 2,
+    r: s_r,
+    fill: 'white'
+  });
+  onmouse_white.setAttribute('fill-opacity', 0);
+  onmouse_white.onclick = on_click_circle;
+  board_svg.appendChild(onmouse_white);
 }
 
 
