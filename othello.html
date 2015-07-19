@@ -13,7 +13,7 @@
 <svg xmlns="http://www.w3.org/2000/svg"
      width="1200" height="1200" viewBox="-100 -100 1000 1000"
      onload="set_board(evt)">
-  <rect x="-40" y="-40" width="740" height="740" fill="gray" stroke="none"/>
+  <rect x="-40" y="-40" width="740" height="740" fill="gray" stroke="none" onmouseover="vanish_helper_stone()"/>
   <rect x="100" y="720" width="480" height="100" fill="skyblue" stroke="none" onclick="pass()" id="pass"/>
   <text x="240" y="800" fill="black" font-size="80" >PASS</text>
   <rect x="660" y="730" width="80" height="80" fill="skyblue" stroke="none" />
