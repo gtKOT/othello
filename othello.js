@@ -37,8 +37,10 @@ var WHITE_TURN = WHITE;
 var turn = BLACK_TURN;
 var rect = []; //各セル
 
-var onmouse_black; // オンマウス時の半透明黒石
-var onmouse_white; // 半透明白石
+/** @type {SVGCircleElement} オンマウス時の半透明黒石 */
+var onmouse_black;
+/** @type {SVGCircleElement} 半透明白石 */
+var onmouse_white;
 var onmouse_i = 0;
 var onmouse_j = 0;
 
