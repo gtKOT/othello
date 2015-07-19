@@ -56,7 +56,7 @@ function set_board(evt) {
   for (i = 1; i < size + 1; i++) {
     rect[i] = [null];
     for (j = 1; j < size + 1; j++) {
-      k = (2 * half_size + 2) * i + j;
+      k = (size + 2) * i + j;
       rect[i][j] = doc.createElementNS(ns, 'rect');
       x = 10 + 80 * (i - 1);
       y = 10 + 80 * (j - 1);
