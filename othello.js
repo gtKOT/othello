@@ -1,4 +1,4 @@
-var ns = "http://www.w3.org/2000/svg";
+var ns = 'http://www.w3.org/2000/svg';
 var board_green = 'rgb(32,128,32)';
 
 var size = 4; // half-size
@@ -131,28 +131,28 @@ function set_board(evt) {
       dr = s_r * Math.cos(0);
       dh = s_h * Math.sin(0);
 
-      d_left   = "M" + (x - dh) + "," + y;
-      d_center = "M" + x + "," + y;
-      d_right  = "M" + (x + dh) + "," + y;
+      d_left   = 'M' + (x - dh) + ',' + y;
+      d_center = 'M' + x + ',' + y;
+      d_right  = 'M' + (x + dh) + ',' + y;
 
-      d_left   += " h" + dh + " a" + dr + "," + s_r + " 0 0,0 0," + (2 * s_r);
-      d_left   += " h" + (-dh) + " a" + dr + "," + s_r + " 0 0,1 0," + (-2 * s_r);
-      d_center += " h" + dh + " a" + dr + "," + s_r + " 0 0,0 0," + (2 * s_r);
-      d_center += " h" + (-dh) + " a" + dr + "," + s_r + " 0 0,1 0," + (-2 * s_r);
-      d_right  += " a" + dr + "," + s_r + " 0 0,0 0," + (2 * s_r);
-      d_right  += " a" + dr + "," + s_r + " 0 0,0 0," + (-2 * s_r);
+      d_left   += ' h' + dh + ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (2 * s_r);
+      d_left   += ' h' + (-dh) + ' a' + dr + ',' + s_r + ' 0 0,1 0,' + (-2 * s_r);
+      d_center += ' h' + dh + ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (2 * s_r);
+      d_center += ' h' + (-dh) + ' a' + dr + ',' + s_r + ' 0 0,1 0,' + (-2 * s_r);
+      d_right  += ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (2 * s_r);
+      d_right  += ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (-2 * s_r);
 
-      st_l.setAttribute("d", d_left);
-      st_c.setAttribute("d", d_center);
-      st_r.setAttribute("d", d_right);
+      st_l.setAttribute('d', d_left);
+      st_c.setAttribute('d', d_center);
+      st_r.setAttribute('d', d_right);
 
-      st_l.setAttribute("fill", "black");
-      st_c.setAttribute("fill", "white");
-      st_r.setAttribute("fill", "white");
+      st_l.setAttribute('fill', 'black');
+      st_c.setAttribute('fill', 'white');
+      st_r.setAttribute('fill', 'white');
 
-      st_l.setAttribute("fill-opacity", "0");
-      st_c.setAttribute("fill-opacity", "0");
-      st_r.setAttribute("fill-opacity", "0");
+      st_l.setAttribute('fill-opacity', '0');
+      st_c.setAttribute('fill-opacity', '0');
+      st_r.setAttribute('fill-opacity', '0');
 
       svgsvg.appendChild(st_l);
       svgsvg.appendChild(st_c);
@@ -162,13 +162,13 @@ function set_board(evt) {
 
   for (i = size; i < size + 2; i++) {
     for (j = size; j < size + 2; j++) {
-      stone_l[i][j].setAttribute("fill-opacity", "1");
-      stone_c[i][j].setAttribute("fill-opacity", "1");
-      stone_r[i][j].setAttribute("fill-opacity", "1");
+      stone_l[i][j].setAttribute('fill-opacity', '1');
+      stone_c[i][j].setAttribute('fill-opacity', '1');
+      stone_r[i][j].setAttribute('fill-opacity', '1');
     }
   }
-  stone_r[size][size].setAttribute("fill", "black");
-  stone_r[size + 1][size + 1].setAttribute("fill", "black");
+  stone_r[size][size].setAttribute('fill', 'black');
+  stone_r[size + 1][size + 1].setAttribute('fill', 'black');
 
 
   //-- マウスオーバー時に表示させる半透明の石 ----------
@@ -233,12 +233,12 @@ function on_click_circle() {
 function click(i, j) {
   var color1, color2, flip_que;
   if (turn === 0) {
-    color1 = "black";
-    color2 = "white";
+    color1 = 'black';
+    color2 = 'white';
   }
   else {
-    color1 = "white";
-    color2 = "black";
+    color1 = 'white';
+    color2 = 'black';
   }
   if (cell[i][j] === -1) {
     flip_que = check_stone(i, j, turn);
@@ -295,23 +295,23 @@ function check_stone(i, j, turn) {
 function coloring_stone(i, j, color) {
   var color1 = color;
   var color2;
-  if (color === "black") {
-    color2 = "white";
+  if (color === 'black') {
+    color2 = 'white';
   }
   else {
-    color2 = "black";
+    color2 = 'black';
   }
 
   var st_l = stone_l[i][j];
   var st_c = stone_c[i][j];
   var st_r = stone_r[i][j];
 
-  st_l.setAttribute("fill", color2);
-  st_c.setAttribute("fill", color1);
-  st_r.setAttribute("fill", color1);
-  st_l.setAttribute("fill-opacity", "1");
-  st_c.setAttribute("fill-opacity", "1");
-  st_r.setAttribute("fill-opacity", "1");
+  st_l.setAttribute('fill', color2);
+  st_c.setAttribute('fill', color1);
+  st_r.setAttribute('fill', color1);
+  st_l.setAttribute('fill-opacity', '1');
+  st_c.setAttribute('fill-opacity', '1');
+  st_r.setAttribute('fill-opacity', '1');
 }
 
 function flip_stone(flip_que, color1, color2) {
@@ -376,24 +376,24 @@ function rotate1(i, j, dr, dh, color1, color2) {
   var x = 10 + 40 + 80 * (i - 1);
   var y = 10 + 40 + 80 * (j - 1) - s_r;
 
-  var d_left   = "M" + (x - dh) + "," + y;
-  var d_center = "M" + x + "," + y;
-  var d_right  = "M" + (x + dh) + "," + y;
+  var d_left   = 'M' + (x - dh) + ',' + y;
+  var d_center = 'M' + x + ',' + y;
+  var d_right  = 'M' + (x + dh) + ',' + y;
 
-  d_left   += " h" + dh + " a" + dr + "," + s_r + " 0 0,0 0," + (2 * s_r);
-  d_left   += " h" + (-dh) + " a" + dr + "," + s_r + " 0 0,1 0," + (-2 * s_r);
-  d_center += " h" + dh + " a" + dr + "," + s_r + " 0 0,0 0," + (2 * s_r);
-  d_center += " h" + (-dh) + " a" + dr + "," + s_r + " 0 0,1 0," + (-2 * s_r);
-  d_right  += " a" + dr + "," + s_r + " 0 0,0 0," + (2 * s_r);
-  d_right  += " a" + dr + "," + s_r + " 0 0,0 0," + (-2 * s_r);
+  d_left   += ' h' + dh + ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (2 * s_r);
+  d_left   += ' h' + (-dh) + ' a' + dr + ',' + s_r + ' 0 0,1 0,' + (-2 * s_r);
+  d_center += ' h' + dh + ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (2 * s_r);
+  d_center += ' h' + (-dh) + ' a' + dr + ',' + s_r + ' 0 0,1 0,' + (-2 * s_r);
+  d_right  += ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (2 * s_r);
+  d_right  += ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (-2 * s_r);
 
-  left.setAttribute("d", d_left);
-  center.setAttribute("d", d_center);
-  right.setAttribute("d", d_right);
+  left.setAttribute('d', d_left);
+  center.setAttribute('d', d_center);
+  right.setAttribute('d', d_right);
 
-  left.setAttribute("fill", color1);
-  center.setAttribute("fill", color2);
-  right.setAttribute("fill", color2);
+  left.setAttribute('fill', color1);
+  center.setAttribute('fill', color2);
+  right.setAttribute('fill', color2);
 }
 
 function rotate2(i, j, dr, dh, color1, color2) {
@@ -404,30 +404,30 @@ function rotate2(i, j, dr, dh, color1, color2) {
   var x = 10 + 40 + 80 * (i - 1);
   var y = 10 + 40 + 80 * (j - 1) - s_r;
 
-  var d_left = "M" + (x - dh) + "," + y;
-  var d_center = "M" + x + "," + y;
-  var d_right = "M" + (x + dh) + "," + y;
+  var d_left = 'M' + (x - dh) + ',' + y;
+  var d_center = 'M' + x + ',' + y;
+  var d_right = 'M' + (x + dh) + ',' + y;
 
-  d_left   += " a" + dr + "," + s_r + " 0 0,0 0," + (2 * s_r);
-  d_left   += " a" + dr + "," + s_r + " 0 0,0 0," + (-2 * s_r);
-  d_center += " h" + (-dh) + " a" + dr + "," + s_r + " 0 0,1 0," + (2 * s_r);
-  d_center += " h" + dh + " a" + dr + "," + s_r + " 0 0,0 0," + (-2 * s_r);
-  d_right  += " h" + (-dh) + " a" + dr + "," + s_r + " 0 0,1 0," + (2 * s_r);
-  d_right  += " h" + dh + " a" + dr + "," + s_r + " 0 0,0 0," + (-2 * s_r);
+  d_left   += ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (2 * s_r);
+  d_left   += ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (-2 * s_r);
+  d_center += ' h' + (-dh) + ' a' + dr + ',' + s_r + ' 0 0,1 0,' + (2 * s_r);
+  d_center += ' h' + dh + ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (-2 * s_r);
+  d_right  += ' h' + (-dh) + ' a' + dr + ',' + s_r + ' 0 0,1 0,' + (2 * s_r);
+  d_right  += ' h' + dh + ' a' + dr + ',' + s_r + ' 0 0,0 0,' + (-2 * s_r);
 
-  left.setAttribute("d", d_left);
-  center.setAttribute("d", d_center);
-  right.setAttribute("d", d_right);
+  left.setAttribute('d', d_left);
+  center.setAttribute('d', d_center);
+  right.setAttribute('d', d_right);
 
-  left.setAttribute("fill", color1);
-  center.setAttribute("fill", color1);
-  right.setAttribute("fill", color2);
+  left.setAttribute('fill', color1);
+  center.setAttribute('fill', color1);
+  right.setAttribute('fill', color2);
 }
 
 
 function pass() {
-  var pass_button = document.getElementById("pass");
-  pass_button.setAttribute("fill", "pink");
+  var pass_button = document.getElementById('pass');
+  pass_button.setAttribute('fill', 'pink');
   turn++;
   turn %= 2;
   turn_coloring(turn);
@@ -435,16 +435,16 @@ function pass() {
 }
 
 function pass_color_reset() {
-  var pass_button = document.getElementById("pass");
-  pass_button.setAttribute("fill", "skyblue");
+  var pass_button = document.getElementById('pass');
+  pass_button.setAttribute('fill', 'skyblue');
 }
 
 function turn_coloring(turn) {
-  var turn_stone = document.getElementById("turn_stone");
+  var turn_stone = document.getElementById('turn_stone');
   if (turn === 1) {
-    turn_stone.setAttribute("fill", "white");
+    turn_stone.setAttribute('fill', 'white');
   }
   else {
-    turn_stone.setAttribute("fill", "black");
+    turn_stone.setAttribute('fill', 'black');
   }
 }
