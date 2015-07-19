@@ -3,7 +3,8 @@
 var ns = 'http://www.w3.org/2000/svg';
 var board_green = 'rgb(32,128,32)';
 
-var size = 4; // half-size
+var half_size = 4;
+var size = half_size * 2;
 
 //-- 各セルの現在の状態記録用 -------------------
 var BLACK = 0;
@@ -11,17 +12,17 @@ var WHITE = 1;
 var EMPTY = -1;
 
 var cell = [];
-for (var i = 0; i < size * 2 + 2; i++) {
+for (var i = 0; i < size + 2; i++) {
   cell[i] = [];
-  for (var j = 0; j < size * 2 + 2; j++) {
+  for (var j = 0; j < size + 2; j++) {
     cell[i][j] = EMPTY;
   }
 }
 
-cell[size][size] = BLACK;
-cell[size][size + 1] = WHITE;
-cell[size + 1][size] = WHITE;
-cell[size + 1][size + 1] = BLACK;
+cell[half_size][half_size] = BLACK;
+cell[half_size][half_size + 1] = WHITE;
+cell[half_size + 1][half_size] = WHITE;
+cell[half_size + 1][half_size + 1] = BLACK;
 
 //-- セルに配置された石：回転アニメーションのために3パーツに分割 -------------------
 var stone_l = [];
@@ -50,10 +51,10 @@ function set_board(evt) {
   var i, j, k, x, y, fill;
 
   //-- 各セルを個別の正方形として作成．クリック時のイベント処理のため．--------------------
-  for (i = 1; i < size * 2 + 1; i++) {
+  for (i = 1; i < size + 1; i++) {
     rect[i] = [null];
-    for (j = 1; j < size * 2 + 1; j++) {
-      k = (2 * size + 2) * i + j;
+    for (j = 1; j < size + 1; j++) {
+      k = (2 * half_size + 2) * i + j;
       rect[i][j] = doc.createElementNS(ns, 'rect');
       x = 10 + 80 * (i - 1);
       y = 10 + 80 * (j - 1);
@@ -72,21 +73,21 @@ function set_board(evt) {
 
   //--- 罫線 -------------------------------------------
   var line;
-  for (i = 0; i < size * 2; i++) {
+  for (i = 0; i < size; i++) {
     line = doc.createElementNS(ns, 'line');
     line.setAttribute('x1', 90 + 80 * i);
     line.setAttribute('y1', 10);
     line.setAttribute('x2', 90 + 80 * i);
-    line.setAttribute('y2', 10 + 80 * size * 2);
+    line.setAttribute('y2', 10 + 80 * size);
     line.setAttribute('stroke', 'black');
     line.setAttribute('stroke-width', 2);
     svgsvg.appendChild(line);
   }
-  for (i = 0; i < size * 2; i++) {
+  for (i = 0; i < size; i++) {
     line = doc.createElementNS(ns, 'line');
     line.setAttribute('x1', 10);
     line.setAttribute('y1', 90 + 80 * i);
-    line.setAttribute('x2', 10 + 80 * size * 2);
+    line.setAttribute('x2', 10 + 80 * size);
     line.setAttribute('y2', 90 + 80 * i);
     line.setAttribute('stroke', 'black');
     line.setAttribute('stroke-width', 2);
@@ -97,8 +98,8 @@ function set_board(evt) {
   line = doc.createElementNS(ns, 'rect');
   line.setAttribute('x', 10);
   line.setAttribute('y', 10);
-  line.setAttribute('width', 80 * size * 2);
-  line.setAttribute('height', 80 * size * 2);
+  line.setAttribute('width', 80 * size);
+  line.setAttribute('height', 80 * size);
   line.setAttribute('fill', 'none');
   line.setAttribute('stroke', 'black');
   line.setAttribute('stroke-width', 5);
@@ -109,8 +110,8 @@ function set_board(evt) {
   for (i = 0; i < 2; i++) {
     for (j = 0; j < 2; j++) {
       dot = doc.createElementNS(ns, 'circle');
-      dot.setAttribute('cx', 170 + 80 * size * i);
-      dot.setAttribute('cy', 170 + 80 * size * j);
+      dot.setAttribute('cx', 170 + 80 * half_size * i);
+      dot.setAttribute('cy', 170 + 80 * half_size * j);
       dot.setAttribute('r', 5);
       dot.setAttribute('fill', 'black');
       svgsvg.appendChild(dot);
@@ -120,12 +121,12 @@ function set_board(evt) {
   //--- 各セルの石：回転アニメーションのために3パーツに分割 ----------------------------------
   var st_l, st_c, st_r, dr, dh, d_left, d_center, d_right;
 
-  for (i = 1; i < size * 2 + 1; i++) {
+  for (i = 1; i < size + 1; i++) {
 
     stone_l[i] = [];
     stone_c[i] = [];
     stone_r[i] = [];
-    for (j = 1; j < size * 2 + 1; j++) {
+    for (j = 1; j < size + 1; j++) {
       x = 10 + 40 + 80 * (i - 1);
       y = 10 + 40 + 80 * (j - 1) - s_r;
 
@@ -169,15 +170,15 @@ function set_board(evt) {
     }
   }
 
-  for (i = size; i < size + 2; i++) {
-    for (j = size; j < size + 2; j++) {
+  for (i = half_size; i < half_size + 2; i++) {
+    for (j = half_size; j < half_size + 2; j++) {
       stone_l[i][j].setAttribute('fill-opacity', '1');
       stone_c[i][j].setAttribute('fill-opacity', '1');
       stone_r[i][j].setAttribute('fill-opacity', '1');
     }
   }
-  stone_r[size][size].setAttribute('fill', 'black');
-  stone_r[size + 1][size + 1].setAttribute('fill', 'black');
+  stone_r[half_size][half_size].setAttribute('fill', 'black');
+  stone_r[half_size + 1][half_size + 1].setAttribute('fill', 'black');
 
 
   //-- マウスオーバー時に表示させる半透明の石 ----------
@@ -204,8 +205,8 @@ function set_board(evt) {
 
 function on_mouse_over(evt) {
   var id = evt.target.id;
-  var j = id % (size * 2 + 2);
-  var i = (id - j) / (size * 2 + 2);
+  var j = id % (size + 2);
+  var i = (id - j) / (size + 2);
   onmouse_i = i;
   onmouse_j = j;
   if (cell[i][j] === EMPTY) {
@@ -229,8 +230,8 @@ function on_mouse_out() {
 
 function on_click(evt) {
   var id = evt.target.id;
-  var j = id % (size * 2 + 2);
-  var i = (id - j) / (size * 2 + 2);
+  var j = id % (size + 2);
+  var i = (id - j) / (size + 2);
 
   click(i, j);
 }
