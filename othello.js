@@ -13,18 +13,18 @@ var BLACK = 0;
 var WHITE = 1;
 var EMPTY = -1;
 
-var cell = [];
+var cells = [];
 for (var i = 0; i < size + 2; i++) {
-  cell[i] = [];
+  cells[i] = [];
   for (var j = 0; j < size + 2; j++) {
-    cell[i][j] = EMPTY;
+    cells[i][j] = EMPTY;
   }
 }
 
-cell[half_size][half_size] = BLACK;
-cell[half_size][half_size + 1] = WHITE;
-cell[half_size + 1][half_size] = WHITE;
-cell[half_size + 1][half_size + 1] = BLACK;
+cells[half_size][half_size] = BLACK;
+cells[half_size][half_size + 1] = WHITE;
+cells[half_size + 1][half_size] = WHITE;
+cells[half_size + 1][half_size + 1] = BLACK;
 
 //-- AI実装のための準備 --
 var player = [];
@@ -34,7 +34,7 @@ var CPU = 1;
 player[WHITE] = HUMAN;
 player[BLACK] = HUMAN;
 
-var pass_flag = [0,0];
+var pass_flag = [0, 0];
 
 
 //-- セルに配置された石：回転アニメーションのために3パーツに分割 -------------------
@@ -189,12 +189,12 @@ function draw_stones(board_svg, frame_width, cell_width, cell_height) {
     }
   }
 
-  for (i = 0; i < cell.length; i++) {
-    for (j = 0; j < cell[i].length; j++) {
-      if (cell[i][j] === EMPTY) {
+  for (i = 0; i < cells.length; i++) {
+    for (j = 0; j < cells[i].length; j++) {
+      if (cells[i][j] === EMPTY) {
         continue;
       }
-      var stone_color = (cell[i][j] === BLACK) ? 'black' : 'white';
+      var stone_color = (cells[i][j] === BLACK) ? 'black' : 'white';
       stone_r[i][j].setAttribute('fill', stone_color);
       stone_l[i][j].setAttribute('fill-opacity', 1);
       stone_c[i][j].setAttribute('fill-opacity', 1);
@@ -242,7 +242,7 @@ function on_mouse_over(evt) {
   var j = pos.j;
   helper_stone_i = i;
   helper_stone_j = j;
-  if (cell[i][j] === EMPTY) {
+  if (cells[i][j] === EMPTY) {
     var stone_color = (turn === BLACK_TURN) ? 'black' : 'white';
     helper_stone.setAttribute('fill', stone_color);
     helper_stone.setAttribute('cx', 10 + 40 + (i - 1) * 80);
@@ -275,15 +275,15 @@ function click(i, j) {
       color1 = 'white';
       color2 = 'black';
     }
-    if (cell[i][j] === EMPTY) {
+    if (cells[i][j] === EMPTY) {
       flip_que = check_stone(i, j, turn);
       if (flip_que.length > 0) {
-        cell[i][j] = turn;
+        cells[i][j] = turn;
         coloring_stone(i, j, color1);
         for (var k = 0; k < flip_que.length; k++) {
           var ci = flip_que[k][0];
           var cj = flip_que[k][1];
-          cell[ci][cj] = turn;
+          cells[ci][cj] = turn;
         }
         flip_stone(flip_que, color1, color2);
         turn++;
@@ -303,13 +303,13 @@ function check_stone(i, j, turn) {
     for (var dj = -1; dj < 2; dj++) {
       ci = i + di;
       cj = j + dj;
-      next = cell[ci][cj];
+      next = cells[ci][cj];
       if (next === another) { // di=dj=0 はここで除外される
         cnt = 0;
         while (next === another) {
           ci += di;
           cj += dj;
-          next = cell[ci][cj];
+          next = cells[ci][cj];
           cnt++;
         }
         if (next === itself) {
