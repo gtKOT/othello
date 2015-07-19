@@ -185,9 +185,8 @@ function draw_stones(board_svg, frame_width, cell_width, cell_height) {
     cx: frame_width + cell_width  / 2,
     cy: frame_width + cell_height / 2,
     r: stone_radius,
-    fill: 'black'
+    'fill-opacity': 0
   });
-  helper_stone.setAttribute('fill-opacity', 0);
   helper_stone.onclick = on_click_circle;
   board_svg.appendChild(helper_stone);
 }
