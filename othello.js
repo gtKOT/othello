@@ -30,14 +30,13 @@ cell[half_size + 1][half_size + 1] = BLACK;
 var stone_l = [];
 var stone_c = [];
 var stone_r = [];
-var s_r = 30; // 石の半径
+var s_r = 30;  // 石の半径
 var s_h = 10;  // 石の厚み半分
 
 var BLACK_TURN = BLACK;
 var WHITE_TURN = WHITE;
 
 var turn = BLACK_TURN;
-var rects = []; //各セル
 
 /** @type {SVGCircleElement} オンマウス時の半透明黒石 */
 var onmouse_black;
@@ -54,74 +53,11 @@ function set_board(evt) {
   var svgsvg = evt.target;
   var i, j, x, y, fill;
 
+  var frame_width = 10;
   var cell_width  = 80;
   var cell_height = 80;
 
-  //-- 各セルを個別の正方形として作成．クリック時のイベント処理のため．--------------------
-  for (i = 1; i < size + 1; i++) {
-    rects[i] = [];
-
-    for (j = 1; j < size + 1; j++) {
-      var rect = svg_util.createRect({
-        id: (size + 2) * i + j,
-        x: 10 + cell_width  * (i - 1),
-        y: 10 + cell_height * (j - 1),
-        width : cell_width,
-        height: cell_height,
-        fill: board_green
-      });
-      rect.onmouseover = on_mouse_over;
-      rect.onclick = on_click;
-      svgsvg.appendChild(rect);
-
-      rects[i][j] = rect;
-    }
-  }
-
-  //--- 罫線 -------------------------------------------
-  for (i = 0; i < size; i++) {
-    svgsvg.appendChild(svg_util.createLine({
-      x1: (10 + cell_width) + cell_width * i,
-      y1: 10,
-      x2: (10 + cell_width) + cell_width * i,
-      y2: 10 + cell_height * size,
-      stroke: 'black',
-      'stroke-color': 2
-    }));
-  }
-  for (i = 0; i < size; i++) {
-    svgsvg.appendChild(svg_util.createLine({
-      x1: 10,
-      y1: (10 + cell_width) + cell_width * i,
-      x2: 10 + cell_height * size,
-      y2: (10 + cell_width) + cell_width * i,
-      stroke: 'black',
-      'stroke-color': 2
-    }));
-  }
-
-  //-- 外枠 --------------------------------------------
-  svgsvg.appendChild(svg_util.createRect({
-    x: 10,
-    y: 10,
-    width : cell_width * size,
-    height: cell_height * size,
-    fill: 'none',
-    stroke: 'black',
-    'stroke-width': 5
-  }));
-
-  //--- 4箇所のドット ----------------------------------
-  for (i = 0; i < 2; i++) {
-    for (j = 0; j < 2; j++) {
-      svgsvg.appendChild(svg_util.createCircle({
-        cx: (10 + cell_width  * 2) + cell_width  * half_size * i,
-        cy: (10 + cell_height * 2) + cell_height * half_size * j,
-        r: 5,
-        fill: 'black'
-      }));
-    }
-  }
+  draw_board(svgsvg, frame_width, cell_width, cell_height);
 
   //--- 各セルの石：回転アニメーションのために3パーツに分割 ----------------------------------
   var st_l, st_c, st_r, dr, dh, d_left, d_center, d_right;
@@ -193,6 +129,73 @@ function set_board(evt) {
   onmouse_white.setAttribute('fill-opacity', 0);
   onmouse_white.onclick = on_click_circle;
   svgsvg.appendChild(onmouse_white);
+}
+
+
+function draw_board(board_svg, frame_width, cell_width, cell_height) {
+  var i, j;
+
+  //-- 各セルを個別の正方形として作成．クリック時のイベント処理のため．--------------------
+  for (i = 1; i < size + 1; i++) {
+    for (j = 1; j < size + 1; j++) {
+      var rect = svg_util.createRect({
+        id: (size + 2) * i + j,
+        x: frame_width + cell_width  * (i - 1),
+        y: frame_width + cell_height * (j - 1),
+        width : cell_width,
+        height: cell_height,
+        fill: board_green
+      });
+      rect.onmouseover = on_mouse_over;
+      rect.onclick = on_click;
+      board_svg.appendChild(rect);
+    }
+  }
+
+  //--- 罫線 -------------------------------------------
+  for (i = 0; i < size; i++) {
+    board_svg.appendChild(svg_util.createLine({
+      x1: (frame_width + cell_width) + cell_width * i,
+      y1: frame_width,
+      x2: (frame_width + cell_width) + cell_width * i,
+      y2: frame_width + cell_height * size,
+      stroke: 'black',
+      'stroke-width': 2
+    }));
+  }
+  for (i = 0; i < size; i++) {
+    board_svg.appendChild(svg_util.createLine({
+      x1: frame_width,
+      y1: (frame_width + cell_width) + cell_width * i,
+      x2: frame_width + cell_height * size,
+      y2: (frame_width + cell_width) + cell_width * i,
+      stroke: 'black',
+      'stroke-width': 2
+    }));
+  }
+
+  //-- 外枠 --------------------------------------------
+  board_svg.appendChild(svg_util.createRect({
+    x: frame_width,
+    y: frame_width,
+    width : cell_width  * size,
+    height: cell_height * size,
+    fill: 'none',
+    stroke: 'black',
+    'stroke-width': frame_width / 2
+  }));
+
+  //--- 4箇所のドット ----------------------------------
+  for (i = 0; i < 2; i++) {
+    for (j = 0; j < 2; j++) {
+      board_svg.appendChild(svg_util.createCircle({
+        cx: (10 + cell_width  * 2) + cell_width  * half_size * i,
+        cy: (10 + cell_height * 2) + cell_height * half_size * j,
+        r: 5,
+        fill: 'black'
+      }));
+    }
+  }
 }
 
 
