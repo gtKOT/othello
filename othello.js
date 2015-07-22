@@ -126,8 +126,8 @@ function draw_board(board_svg, frame_width, cell_width, cell_height) {
   for (i = 0; i < 2; i++) {
     for (j = 0; j < 2; j++) {
       board_svg.appendChild(svg_util.createCircle({
-        cx: (10 + cell_width  * 2) + cell_width  * half_size * i,
-        cy: (10 + cell_height * 2) + cell_height * half_size * j,
+        cx: (frame_width + cell_width  * 2) + cell_width  * half_size * i,
+        cy: (frame_width + cell_height * 2) + cell_height * half_size * j,
         r: 5,
         fill: 'black'
       }));
