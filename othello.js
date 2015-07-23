@@ -156,23 +156,23 @@ function draw_stones(board_svg, frame_width, cell_width, cell_height) {
       d_left = [
         absM(x - dh, y),
         relH(dh),
-        relA(dr, stone_radius, 0, 0, 0, 0,  2 * stone_radius),
+        relA(dr, stone_radius, 0, 2 * stone_radius),
         relH(-dh),
-        relA(dr, stone_radius, 0, 0, 1, 0, -2 * stone_radius)
+        relA(dr, stone_radius, 0, -2 * stone_radius, { clockwise: true })
       ].join(' ');
 
       d_center = [
         absM(x, y),
         relH(dh),
-        relA(dr, stone_radius, 0, 0, 0, 0,  2 * stone_radius),
+        relA(dr, stone_radius, 0, 2 * stone_radius),
         relH(-dh),
-        relA(dr, stone_radius, 0, 0, 1, 0, -2 * stone_radius)
+        relA(dr, stone_radius, 0, -2 * stone_radius, { clockwise: true })
       ].join(' ');
 
       d_right = [
         absM(x + dh, y),
-        relA(dr, stone_radius, 0, 0, 0, 0,  2 * stone_radius),
-        relA(dr, stone_radius, 0, 0, 0, 0, -2 * stone_radius)
+        relA(dr, stone_radius, 0,  2 * stone_radius),
+        relA(dr, stone_radius, 0, -2 * stone_radius)
       ].join(' ');
 
       st_l = svg_util.createPath({d: d_left,   fill: 'black', 'fill-opacity': 0});
@@ -221,10 +221,26 @@ function relH(dx) {
   return 'h' + dx;
 }
 
-function relA(rx, ry, x_axis_rotation, large_arc_flag, sweep_flag, x, y) {
+/**
+ * @param {number} rx
+ * @param {number} ry
+ * @param {number} ex
+ * @param {number} ey
+ * @param {Object} [options]
+ * @param {number} [options.rotate]
+ * @param {boolean} [options.large_arc]
+ * @param {boolean} [options.clockwise]
+ * @returns {string}
+ */
+function relA(rx, ry, ex, ey, options) {
+  options = options || {};
+  var x_axis_rotation = options.rotate || 0;
+  var large_arc_flag  = (options.large_arc) ? 1 : 0;
+  var sweep_flag      = (options.clockwise) ? 1 : 0;
+
   var rs = [rx, ry].join(',');
   var flags = [large_arc_flag, sweep_flag].join(',');
-  var end_point = [x, y].join(',');
+  var end_point = [ex, ey].join(',');
   return 'a' + [rs, x_axis_rotation, flags, end_point].join(' ');
 }
 
@@ -412,23 +428,23 @@ function rotate1(i, j, dr, dh, color1, color2) {
   var d_left = [
     absM(x - dh, y),
     relH(dh),
-    relA(dr, stone_radius, 0, 0, 0, 0,  2 * stone_radius),
+    relA(dr, stone_radius, 0,  2 * stone_radius),
     relH(-dh),
-    relA(dr, stone_radius, 0, 0, 1, 0, -2 * stone_radius)
+    relA(dr, stone_radius, 0, -2 * stone_radius, { clockwise: true })
   ].join(' ');
 
   var d_center = [
     absM(x, y),
     relH(dh),
-    relA(dr, stone_radius, 0, 0, 0, 0,  2 * stone_radius),
+    relA(dr, stone_radius, 0,  2 * stone_radius),
     relH(-dh),
-    relA(dr, stone_radius, 0, 0, 1, 0, -2 * stone_radius)
+    relA(dr, stone_radius, 0, -2 * stone_radius, { clockwise: true })
   ].join(' ');
 
   var d_right = [
     absM(x + dh, y),
-    relA(dr, stone_radius, 0, 0, 0, 0,  2 * stone_radius),
-    relA(dr, stone_radius, 0, 0, 0, 0, -2 * stone_radius)
+    relA(dr, stone_radius, 0,  2 * stone_radius),
+    relA(dr, stone_radius, 0, -2 * stone_radius)
   ].join(' ');
 
   left.setAttribute('d', d_left);
@@ -450,24 +466,24 @@ function rotate2(i, j, dr, dh, color1, color2) {
 
   var d_left = [
     absM(x - dh, y),
-    relA(dr, stone_radius, 0, 0, 0, 0,  2 * stone_radius),
-    relA(dr, stone_radius, 0, 0, 0, 0, -2 * stone_radius)
+    relA(dr, stone_radius, 0,  2 * stone_radius),
+    relA(dr, stone_radius, 0, -2 * stone_radius)
   ].join(' ');
 
   var d_center = [
     absM(x, y),
     relH(-dh),
-    relA(dr, stone_radius, 0, 0, 1, 0,  2 * stone_radius),
+    relA(dr, stone_radius, 0, 2 * stone_radius, { clockwise: true }),
     relH(dh),
-    relA(dr, stone_radius, 0, 0, 0, 0, -2 * stone_radius)
+    relA(dr, stone_radius, 0, -2 * stone_radius)
   ].join(' ');
 
   var d_right = [
     absM(x + dh, y),
     relH(-dh),
-    relA(dr, stone_radius, 0, 0, 1, 0,  2 * stone_radius),
+    relA(dr, stone_radius, 0, 2 * stone_radius, { clockwise: true }),
     relH(dh),
-    relA(dr, stone_radius, 0, 0, 0, 0, -2 * stone_radius)
+    relA(dr, stone_radius, 0, -2 * stone_radius)
   ].join(' ');
 
   left.setAttribute('d', d_left);
