@@ -38,9 +38,7 @@ var pass_flag = [0, 0];
 
 
 //-- セルに配置された石：回転アニメーションのために3パーツに分割 -------------------
-var stone_l = [];
-var stone_c = [];
-var stone_r = [];
+var stones = [];
 var stone_radius = 30;  // 石の半径
 var stone_thickness = 10;  // 石の厚み半分
 
@@ -143,9 +141,7 @@ function draw_stones(board_svg, frame_width, cell_width, cell_height) {
   var st_l, st_c, st_r, dr, dh, d_left, d_center, d_right;
 
   for (i = 1; i < size + 1; i++) {
-    stone_l[i] = [];
-    stone_c[i] = [];
-    stone_r[i] = [];
+    stones[i] = [];
     for (j = 1; j < size + 1; j++) {
       x = frame_width + cell_width  / 2 + cell_width  * (i - 1);
       y = frame_width + cell_height / 2 + cell_height * (j - 1) - stone_radius;
@@ -183,9 +179,11 @@ function draw_stones(board_svg, frame_width, cell_width, cell_height) {
       board_svg.appendChild(st_c);
       board_svg.appendChild(st_r);
 
-      stone_l[i][j] = st_l;
-      stone_c[i][j] = st_c;
-      stone_r[i][j] = st_r;
+      stones[i][j] = {
+        left  : st_l,
+        center: st_c,
+        right : st_r
+      };
     }
   }
 
@@ -194,11 +192,13 @@ function draw_stones(board_svg, frame_width, cell_width, cell_height) {
       if (cells[i][j] === EMPTY) {
         continue;
       }
+      var stone = stones[i][j];
       var stone_color = (cells[i][j] === BLACK) ? 'black' : 'white';
-      stone_r[i][j].setAttribute('fill', stone_color);
-      stone_l[i][j].setAttribute('fill-opacity', 1);
-      stone_c[i][j].setAttribute('fill-opacity', 1);
-      stone_r[i][j].setAttribute('fill-opacity', 1);
+
+      stone.left.setAttribute('fill-opacity', 1);
+      stone.center.setAttribute('fill-opacity', 1);
+      stone.right.setAttribute('fill-opacity', 1);
+      stone.right.setAttribute('fill', stone_color);
     }
   }
 
@@ -206,7 +206,7 @@ function draw_stones(board_svg, frame_width, cell_width, cell_height) {
   helper_stone = svg_util.createCircle({
     cx: frame_width + cell_width  / 2,
     cy: frame_width + cell_height / 2,
-    r: stone_radius,
+    right: stone_radius,
     'fill-opacity': 0
   });
   helper_stone.onclick = on_click_circle;
@@ -354,16 +354,13 @@ function coloring_stone(i, j, color) {
     color2 = 'black';
   }
 
-  var st_l = stone_l[i][j];
-  var st_c = stone_c[i][j];
-  var st_r = stone_r[i][j];
-
-  st_l.setAttribute('fill', color2);
-  st_c.setAttribute('fill', color1);
-  st_r.setAttribute('fill', color1);
-  st_l.setAttribute('fill-opacity', '1');
-  st_c.setAttribute('fill-opacity', '1');
-  st_r.setAttribute('fill-opacity', '1');
+  var stone = stones[i][j];
+  stone.left.setAttribute('fill', color2);
+  stone.center.setAttribute('fill', color1);
+  stone.right.setAttribute('fill', color1);
+  stone.left.setAttribute('fill-opacity', '1');
+  stone.center.setAttribute('fill-opacity', '1');
+  stone.right.setAttribute('fill-opacity', '1');
 }
 
 function flip_stone(flip_que, color1, color2) {
@@ -418,10 +415,6 @@ function flip_stone2(flip_que, ang, color1, color2) {
 
 
 function rotate1(i, j, dr, dh, color1, color2) {
-  var left   = stone_l[i][j];
-  var center = stone_c[i][j];
-  var right  = stone_r[i][j];
-
   var x = 10 + 40 + 80 * (i - 1);
   var y = 10 + 40 + 80 * (j - 1) - stone_radius;
 
@@ -447,20 +440,18 @@ function rotate1(i, j, dr, dh, color1, color2) {
     relA(dr, stone_radius, 0, -2 * stone_radius)
   ].join(' ');
 
-  left.setAttribute('d', d_left);
-  center.setAttribute('d', d_center);
-  right.setAttribute('d', d_right);
+  var stone = stones[i][j];
 
-  left.setAttribute('fill', color1);
-  center.setAttribute('fill', color2);
-  right.setAttribute('fill', color2);
+  stone.left.setAttribute('d', d_left);
+  stone.center.setAttribute('d', d_center);
+  stone.right.setAttribute('d', d_right);
+
+  stone.left.setAttribute('fill', color1);
+  stone.center.setAttribute('fill', color2);
+  stone.right.setAttribute('fill', color2);
 }
 
 function rotate2(i, j, dr, dh, color1, color2) {
-  var left   = stone_l[i][j];
-  var center = stone_c[i][j];
-  var right  = stone_r[i][j];
-
   var x = 10 + 40 + 80 * (i - 1);
   var y = 10 + 40 + 80 * (j - 1) - stone_radius;
 
@@ -486,13 +477,15 @@ function rotate2(i, j, dr, dh, color1, color2) {
     relA(dr, stone_radius, 0, -2 * stone_radius)
   ].join(' ');
 
-  left.setAttribute('d', d_left);
-  center.setAttribute('d', d_center);
-  right.setAttribute('d', d_right);
+  var stone = stones[i][j];
 
-  left.setAttribute('fill', color1);
-  center.setAttribute('fill', color1);
-  right.setAttribute('fill', color2);
+  stone.left.setAttribute('d', d_left);
+  stone.center.setAttribute('d', d_center);
+  stone.right.setAttribute('d', d_right);
+
+  stone.left.setAttribute('fill', color1);
+  stone.center.setAttribute('fill', color1);
+  stone.right.setAttribute('fill', color2);
 }
 
 
