@@ -206,7 +206,7 @@ function draw_stones(board_svg, frame_width, cell_width, cell_height) {
   helper_stone = svg_util.createCircle({
     cx: frame_width + cell_width  / 2,
     cy: frame_width + cell_height / 2,
-    right: stone_radius,
+    r: stone_radius,
     'fill-opacity': 0
   });
   helper_stone.onclick = on_click_circle;
