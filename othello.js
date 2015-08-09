@@ -489,13 +489,8 @@ function pass() {
 }
 
 function turn_coloring(turn) {
-  var turn_stone = document.getElementById('turn-stone');
-  if (turn === BLACK_TURN) {
-    turn_stone.setAttribute('fill', 'black');
-  }
-  else {
-    turn_stone.setAttribute('fill', 'white');
-  }
+  var turn_stone = document.getElementById('turn-stone-holder');
+  turn_stone.innerHTML = (turn === BLACK_TURN) ? '●' : '○';
 }
 
 function player_change(color, value){
