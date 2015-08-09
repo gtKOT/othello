@@ -22,6 +22,14 @@
   fill: black;
 }
 
+.helper-stone {
+  fill-opacity: 0;
+}
+
+.helper-stone:hover {
+  fill-opacity: 0.5;
+}
+
 .pass-button {
   fill: skyblue;
   stroke: none;

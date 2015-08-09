@@ -198,10 +198,10 @@ function draw_stones(board_svg, frame_width, cell_width, cell_height) {
 
   //-- マウスオーバー時に表示させる半透明の石 ----------
   helper_stone = svg_util.createCircle({
+    'class': 'helper-stone',
     cx: frame_width + cell_width  / 2,
     cy: frame_width + cell_height / 2,
-    r: stone_radius,
-    'fill-opacity': 0
+    r: stone_radius
   });
   helper_stone.onclick = on_click_circle;
   board_svg.appendChild(helper_stone);
@@ -257,12 +257,7 @@ function on_mouse_over(evt) {
     helper_stone.setAttribute('fill', stone_color);
     helper_stone.setAttribute('cx', 10 + 40 + (i - 1) * 80);
     helper_stone.setAttribute('cy', 10 + 40 + (j - 1) * 80);
-    helper_stone.setAttribute('fill-opacity', 0.5);
   }
-}
-
-function vanish_helper_stone() {
-  helper_stone.setAttribute('fill-opacity', 0);
 }
 
 function on_click(evt) {
