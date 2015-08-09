@@ -13,34 +13,32 @@ var BLACK = 0;
 var WHITE = 1;
 var EMPTY = -1;
 
-var cell = [];
+var cells = [];
 for (var i = 0; i < size + 2; i++) {
-  cell[i] = [];
+  cells[i] = [];
   for (var j = 0; j < size + 2; j++) {
-    cell[i][j] = EMPTY;
+    cells[i][j] = EMPTY;
   }
 }
 
-cell[half_size][half_size] = BLACK;
-cell[half_size][half_size + 1] = WHITE;
-cell[half_size + 1][half_size] = WHITE;
-cell[half_size + 1][half_size + 1] = BLACK;
+cells[half_size][half_size] = BLACK;
+cells[half_size][half_size + 1] = WHITE;
+cells[half_size + 1][half_size] = WHITE;
+cells[half_size + 1][half_size + 1] = BLACK;
 
 //-- AI実装のための準備 --
-var player = [];
+var players = [];
 
 var HUMAN = 0;
 var CPU = 1;
-player[WHITE] = HUMAN;
-player[BLACK] = HUMAN;
+players[WHITE] = HUMAN;
+players[BLACK] = HUMAN;
 
-var pass_flag = [0,0];
+var pass_flag = [0, 0];
 
 
 //-- セルに配置された石：回転アニメーションのために3パーツに分割 -------------------
-var stone_l = [];
-var stone_c = [];
-var stone_r = [];
+var stones = [];
 var stone_radius = 30;  // 石の半径
 var stone_thickness = 10;  // 石の厚み半分
 
@@ -126,8 +124,8 @@ function draw_board(board_svg, frame_width, cell_width, cell_height) {
   for (i = 0; i < 2; i++) {
     for (j = 0; j < 2; j++) {
       board_svg.appendChild(svg_util.createCircle({
-        cx: (10 + cell_width  * 2) + cell_width  * half_size * i,
-        cy: (10 + cell_height * 2) + cell_height * half_size * j,
+        cx: (frame_width + cell_width  * 2) + cell_width  * half_size * i,
+        cy: (frame_width + cell_height * 2) + cell_height * half_size * j,
         r: 5,
         fill: 'black'
       }));
@@ -143,9 +141,7 @@ function draw_stones(board_svg, frame_width, cell_width, cell_height) {
   var st_l, st_c, st_r, dr, dh, d_left, d_center, d_right;
 
   for (i = 1; i < size + 1; i++) {
-    stone_l[i] = [];
-    stone_c[i] = [];
-    stone_r[i] = [];
+    stones[i] = [];
     for (j = 1; j < size + 1; j++) {
       x = frame_width + cell_width  / 2 + cell_width  * (i - 1);
       y = frame_width + cell_height / 2 + cell_height * (j - 1) - stone_radius;
@@ -153,16 +149,27 @@ function draw_stones(board_svg, frame_width, cell_width, cell_height) {
       dr = stone_radius * Math.cos(0);
       dh = stone_thickness * Math.sin(0);
 
-      d_left   = 'M' + (x - dh) + ',' + y;
-      d_center = 'M' + x + ',' + y;
-      d_right  = 'M' + (x + dh) + ',' + y;
+      d_left = [
+        absM(x - dh, y),
+        relH(dh),
+        relA(dr, stone_radius, 0, 2 * stone_radius),
+        relH(-dh),
+        relA(dr, stone_radius, 0, -2 * stone_radius, { clockwise: true })
+      ].join(' ');
 
-      d_left   += ' h' + dh + ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (2 * stone_radius);
-      d_left   += ' h' + (-dh) + ' a' + dr + ',' + stone_radius + ' 0 0,1 0,' + (-2 * stone_radius);
-      d_center += ' h' + dh + ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (2 * stone_radius);
-      d_center += ' h' + (-dh) + ' a' + dr + ',' + stone_radius + ' 0 0,1 0,' + (-2 * stone_radius);
-      d_right  += ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (2 * stone_radius);
-      d_right  += ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (-2 * stone_radius);
+      d_center = [
+        absM(x, y),
+        relH(dh),
+        relA(dr, stone_radius, 0, 2 * stone_radius),
+        relH(-dh),
+        relA(dr, stone_radius, 0, -2 * stone_radius, { clockwise: true })
+      ].join(' ');
+
+      d_right = [
+        absM(x + dh, y),
+        relA(dr, stone_radius, 0,  2 * stone_radius),
+        relA(dr, stone_radius, 0, -2 * stone_radius)
+      ].join(' ');
 
       st_l = svg_util.createPath({d: d_left,   fill: 'black', 'fill-opacity': 0});
       st_c = svg_util.createPath({d: d_center, fill: 'white', 'fill-opacity': 0});
@@ -172,22 +179,26 @@ function draw_stones(board_svg, frame_width, cell_width, cell_height) {
       board_svg.appendChild(st_c);
       board_svg.appendChild(st_r);
 
-      stone_l[i][j] = st_l;
-      stone_c[i][j] = st_c;
-      stone_r[i][j] = st_r;
+      stones[i][j] = {
+        left  : st_l,
+        center: st_c,
+        right : st_r
+      };
     }
   }
 
-  for (i = 0; i < cell.length; i++) {
-    for (j = 0; j < cell[i].length; j++) {
-      if (cell[i][j] === EMPTY) {
+  for (i = 0; i < cells.length; i++) {
+    for (j = 0; j < cells[i].length; j++) {
+      if (cells[i][j] === EMPTY) {
         continue;
       }
-      var stone_color = (cell[i][j] === BLACK) ? 'black' : 'white';
-      stone_r[i][j].setAttribute('fill', stone_color);
-      stone_l[i][j].setAttribute('fill-opacity', 1);
-      stone_c[i][j].setAttribute('fill-opacity', 1);
-      stone_r[i][j].setAttribute('fill-opacity', 1);
+      var stone = stones[i][j];
+      var stone_color = (cells[i][j] === BLACK) ? 'black' : 'white';
+
+      stone.left.setAttribute('fill-opacity', 1);
+      stone.center.setAttribute('fill-opacity', 1);
+      stone.right.setAttribute('fill-opacity', 1);
+      stone.right.setAttribute('fill', stone_color);
     }
   }
 
@@ -200,6 +211,37 @@ function draw_stones(board_svg, frame_width, cell_width, cell_height) {
   });
   helper_stone.onclick = on_click_circle;
   board_svg.appendChild(helper_stone);
+}
+
+function absM(x, y) {
+  return 'M' + [x, y].join(',');
+}
+
+function relH(dx) {
+  return 'h' + dx;
+}
+
+/**
+ * @param {number} rx
+ * @param {number} ry
+ * @param {number} ex
+ * @param {number} ey
+ * @param {Object} [options]
+ * @param {number} [options.rotate]
+ * @param {boolean} [options.large_arc]
+ * @param {boolean} [options.clockwise]
+ * @returns {string}
+ */
+function relA(rx, ry, ex, ey, options) {
+  options = options || {};
+  var x_axis_rotation = options.rotate || 0;
+  var large_arc_flag  = (options.large_arc) ? 1 : 0;
+  var sweep_flag      = (options.clockwise) ? 1 : 0;
+
+  var rs = [rx, ry].join(',');
+  var flags = [large_arc_flag, sweep_flag].join(',');
+  var end_point = [ex, ey].join(',');
+  return 'a' + [rs, x_axis_rotation, flags, end_point].join(' ');
 }
 
 
@@ -216,7 +258,7 @@ function on_mouse_over(evt) {
   var j = pos.j;
   helper_stone_i = i;
   helper_stone_j = j;
-  if (cell[i][j] === EMPTY) {
+  if (cells[i][j] === EMPTY) {
     var stone_color = (turn === BLACK_TURN) ? 'black' : 'white';
     helper_stone.setAttribute('fill', stone_color);
     helper_stone.setAttribute('cx', 10 + 40 + (i - 1) * 80);
@@ -239,7 +281,7 @@ function on_click_circle() {
 }
 
 function click(i, j) {
-  if (player[turn] === HUMAN) {
+  if (players[turn] === HUMAN) {
     var color1, color2, flip_que;
     if (turn === BLACK_TURN) {
       color1 = 'black';
@@ -249,15 +291,15 @@ function click(i, j) {
       color1 = 'white';
       color2 = 'black';
     }
-    if (cell[i][j] === EMPTY) {
+    if (cells[i][j] === EMPTY) {
       flip_que = check_stone(i, j, turn);
       if (flip_que.length > 0) {
-        cell[i][j] = turn;
+        cells[i][j] = turn;
         coloring_stone(i, j, color1);
         for (var k = 0; k < flip_que.length; k++) {
           var ci = flip_que[k][0];
           var cj = flip_que[k][1];
-          cell[ci][cj] = turn;
+          cells[ci][cj] = turn;
         }
         flip_stone(flip_que, color1, color2);
         turn++;
@@ -277,13 +319,13 @@ function check_stone(i, j, turn) {
     for (var dj = -1; dj < 2; dj++) {
       ci = i + di;
       cj = j + dj;
-      next = cell[ci][cj];
+      next = cells[ci][cj];
       if (next === another) { // di=dj=0 はここで除外される
         cnt = 0;
         while (next === another) {
           ci += di;
           cj += dj;
-          next = cell[ci][cj];
+          next = cells[ci][cj];
           cnt++;
         }
         if (next === itself) {
@@ -312,16 +354,13 @@ function coloring_stone(i, j, color) {
     color2 = 'black';
   }
 
-  var st_l = stone_l[i][j];
-  var st_c = stone_c[i][j];
-  var st_r = stone_r[i][j];
-
-  st_l.setAttribute('fill', color2);
-  st_c.setAttribute('fill', color1);
-  st_r.setAttribute('fill', color1);
-  st_l.setAttribute('fill-opacity', '1');
-  st_c.setAttribute('fill-opacity', '1');
-  st_r.setAttribute('fill-opacity', '1');
+  var stone = stones[i][j];
+  stone.left.setAttribute('fill', color2);
+  stone.center.setAttribute('fill', color1);
+  stone.right.setAttribute('fill', color1);
+  stone.left.setAttribute('fill-opacity', '1');
+  stone.center.setAttribute('fill-opacity', '1');
+  stone.right.setAttribute('fill-opacity', '1');
 }
 
 function flip_stone(flip_que, color1, color2) {
@@ -376,64 +415,82 @@ function flip_stone2(flip_que, ang, color1, color2) {
 
 
 function rotate1(i, j, dr, dh, color1, color2) {
-  var left   = stone_l[i][j];
-  var center = stone_c[i][j];
-  var right  = stone_r[i][j];
-
   var x = 10 + 40 + 80 * (i - 1);
   var y = 10 + 40 + 80 * (j - 1) - stone_radius;
 
-  var d_left   = 'M' + (x - dh) + ',' + y;
-  var d_center = 'M' + x + ',' + y;
-  var d_right  = 'M' + (x + dh) + ',' + y;
+  var d_left = [
+    absM(x - dh, y),
+    relH(dh),
+    relA(dr, stone_radius, 0,  2 * stone_radius),
+    relH(-dh),
+    relA(dr, stone_radius, 0, -2 * stone_radius, { clockwise: true })
+  ].join(' ');
 
-  d_left   += ' h' + dh + ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (2 * stone_radius);
-  d_left   += ' h' + (-dh) + ' a' + dr + ',' + stone_radius + ' 0 0,1 0,' + (-2 * stone_radius);
-  d_center += ' h' + dh + ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (2 * stone_radius);
-  d_center += ' h' + (-dh) + ' a' + dr + ',' + stone_radius + ' 0 0,1 0,' + (-2 * stone_radius);
-  d_right  += ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (2 * stone_radius);
-  d_right  += ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (-2 * stone_radius);
+  var d_center = [
+    absM(x, y),
+    relH(dh),
+    relA(dr, stone_radius, 0,  2 * stone_radius),
+    relH(-dh),
+    relA(dr, stone_radius, 0, -2 * stone_radius, { clockwise: true })
+  ].join(' ');
 
-  left.setAttribute('d', d_left);
-  center.setAttribute('d', d_center);
-  right.setAttribute('d', d_right);
+  var d_right = [
+    absM(x + dh, y),
+    relA(dr, stone_radius, 0,  2 * stone_radius),
+    relA(dr, stone_radius, 0, -2 * stone_radius)
+  ].join(' ');
 
-  left.setAttribute('fill', color1);
-  center.setAttribute('fill', color2);
-  right.setAttribute('fill', color2);
+  var stone = stones[i][j];
+
+  stone.left.setAttribute('d', d_left);
+  stone.center.setAttribute('d', d_center);
+  stone.right.setAttribute('d', d_right);
+
+  stone.left.setAttribute('fill', color1);
+  stone.center.setAttribute('fill', color2);
+  stone.right.setAttribute('fill', color2);
 }
 
 function rotate2(i, j, dr, dh, color1, color2) {
-  var left   = stone_l[i][j];
-  var center = stone_c[i][j];
-  var right  = stone_r[i][j];
-
   var x = 10 + 40 + 80 * (i - 1);
   var y = 10 + 40 + 80 * (j - 1) - stone_radius;
 
-  var d_left   = 'M' + (x - dh) + ',' + y;
-  var d_center = 'M' + x + ',' + y;
-  var d_right  = 'M' + (x + dh) + ',' + y;
+  var d_left = [
+    absM(x - dh, y),
+    relA(dr, stone_radius, 0,  2 * stone_radius),
+    relA(dr, stone_radius, 0, -2 * stone_radius)
+  ].join(' ');
 
-  d_left   += ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (2 * stone_radius);
-  d_left   += ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (-2 * stone_radius);
-  d_center += ' h' + (-dh) + ' a' + dr + ',' + stone_radius + ' 0 0,1 0,' + (2 * stone_radius);
-  d_center += ' h' + dh + ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (-2 * stone_radius);
-  d_right  += ' h' + (-dh) + ' a' + dr + ',' + stone_radius + ' 0 0,1 0,' + (2 * stone_radius);
-  d_right  += ' h' + dh + ' a' + dr + ',' + stone_radius + ' 0 0,0 0,' + (-2 * stone_radius);
+  var d_center = [
+    absM(x, y),
+    relH(-dh),
+    relA(dr, stone_radius, 0, 2 * stone_radius, { clockwise: true }),
+    relH(dh),
+    relA(dr, stone_radius, 0, -2 * stone_radius)
+  ].join(' ');
 
-  left.setAttribute('d', d_left);
-  center.setAttribute('d', d_center);
-  right.setAttribute('d', d_right);
+  var d_right = [
+    absM(x + dh, y),
+    relH(-dh),
+    relA(dr, stone_radius, 0, 2 * stone_radius, { clockwise: true }),
+    relH(dh),
+    relA(dr, stone_radius, 0, -2 * stone_radius)
+  ].join(' ');
 
-  left.setAttribute('fill', color1);
-  center.setAttribute('fill', color1);
-  right.setAttribute('fill', color2);
+  var stone = stones[i][j];
+
+  stone.left.setAttribute('d', d_left);
+  stone.center.setAttribute('d', d_center);
+  stone.right.setAttribute('d', d_right);
+
+  stone.left.setAttribute('fill', color1);
+  stone.center.setAttribute('fill', color1);
+  stone.right.setAttribute('fill', color2);
 }
 
 
 function pass() {
-  if (player[turn] === HUMAN) {
+  if (players[turn] === HUMAN) {
     var pass_button = document.getElementById('pass');
     pass_button.setAttribute('fill', 'pink');
     turn++;
@@ -461,5 +518,5 @@ function turn_coloring(turn) {
 }
 
 function player_change(color, value){
-  player[color] = value;
+  players[color] = value;
 }
