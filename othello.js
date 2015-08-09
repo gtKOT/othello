@@ -293,6 +293,7 @@ function click(i, j) {
         flip_stone(flip_que, color1, color2);
         turn++;
         turn %= 2;
+        turn_coloring(turn);
       }
     }
   }
