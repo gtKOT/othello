@@ -122,7 +122,7 @@ function draw_stones(board_svg, cell_width, cell_height) {
     for (j = 1; j < size + 1; j++) {
       var cell = svg_util.createSVG({
         'class': 'cell',
-        id: (size + 2) * i + j,
+        id: to_id(i, j),
         x: cell_width  * (i - 1),
         y: cell_height * (j - 1),
         width : cell_width,
@@ -232,6 +232,10 @@ function relA(rx, ry, ex, ey, options) {
   return 'a' + [rs, x_axis_rotation, flags, end_point].join(' ');
 }
 
+
+function to_id(i, j) {
+  return (size + 2) * i + j;
+}
 
 function to_pos(id) {
   var j = id % (size + 2);
