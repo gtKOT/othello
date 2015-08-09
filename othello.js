@@ -5,6 +5,9 @@ var svg_util = window.nSatohOthello.svgUtil;
 var half_size = 4;
 var size = half_size * 2;
 
+var cell_width  = 80;
+var cell_height = 80;
+
 
 //-- 各セルの現在の状態記録用 -------------------
 var BLACK = 0;
@@ -55,25 +58,25 @@ var d_ang = 6; // 石の回転アニメーションの角度ステップ
 
 
 function set_board(evt) {
-  var cell_width  = 80;
-  var cell_height = 80;
-
   var svgsvg = evt.target;
-  draw_board(svgsvg, cell_width, cell_height);
-  draw_stones(svgsvg, cell_width, cell_height);
+  draw_board(svgsvg);
+  draw_stones(svgsvg);
 }
 
 
-function draw_board(board_svg, cell_width, cell_height) {
+function draw_board(board_svg) {
   var i, j;
+
+  var board_width  = cell_width  * size;
+  var board_height = cell_height * size;
 
   //-- 下地 --------------------------------------------
   board_svg.appendChild(svg_util.createRect({
     'class': 'ground',
     x: 0,
     y: 0,
-    width : cell_width  * size,
-    height: cell_height * size
+    width : board_width,
+    height: board_height
   }));
 
   //--- 罫線 -------------------------------------------
@@ -83,16 +86,16 @@ function draw_board(board_svg, cell_width, cell_height) {
       x1: cell_width * i,
       y1: 0,
       x2: cell_width * i,
-      y2: cell_height * size
+      y2: board_height
     }));
   }
   for (i = 1; i <= size - 1; i++) {
     board_svg.appendChild(svg_util.createLine({
       'class': 'rule',
       x1: 0,
-      y1: cell_width * i,
-      x2: cell_height * size,
-      y2: cell_width * i
+      y1: cell_height * i,
+      x2: board_width,
+      y2: cell_height * i
     }));
   }
 
@@ -110,7 +113,7 @@ function draw_board(board_svg, cell_width, cell_height) {
 }
 
 
-function draw_stones(board_svg, cell_width, cell_height) {
+function draw_stones(board_svg) {
   var i, j;
 
   //--- 各セルの石：回転アニメーションのために3パーツに分割 ----------------------------------
@@ -252,8 +255,6 @@ function on_mouse_over(evt) {
   helper_stone_j = j;
   if (cells[i][j] === EMPTY) {
     var stone_color = (turn === BLACK_TURN) ? 'black' : 'white';
-    var cell_width  = 80;
-    var cell_height = 80;
     helper_stone.setAttribute('fill', stone_color);
     helper_stone.setAttribute('cx', (i - 1) * cell_width + cell_width / 2);
     helper_stone.setAttribute('cy', (j - 1) * cell_height + cell_height / 2);
@@ -405,8 +406,6 @@ function flip_stone2(flip_que, ang, color1, color2) {
 
 
 function rotate1(i, j, dr, dh, color1, color2) {
-  var cell_width  = 80;
-  var cell_height = 80;
   var stone_center_x = cell_width  / 2;
   var stone_center_y = cell_height / 2;
 
@@ -444,8 +443,6 @@ function rotate1(i, j, dr, dh, color1, color2) {
 }
 
 function rotate2(i, j, dr, dh, color1, color2) {
-  var cell_width  = 80;
-  var cell_height = 80;
   var stone_center_x = cell_width  / 2;
   var stone_center_y = cell_height / 2;
 
