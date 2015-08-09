@@ -2,8 +2,6 @@
 
 var svg_util = window.nSatohOthello.svgUtil;
 
-var board_green = 'rgb(32,128,32)';
-
 var half_size = 4;
 var size = half_size * 2;
 
@@ -74,12 +72,12 @@ function draw_board(board_svg, frame_width, cell_width, cell_height) {
   for (i = 1; i < size + 1; i++) {
     for (j = 1; j < size + 1; j++) {
       var rect = svg_util.createRect({
+        'class': 'cell',
         id: (size + 2) * i + j,
         x: frame_width + cell_width  * (i - 1),
         y: frame_width + cell_height * (j - 1),
         width : cell_width,
-        height: cell_height,
-        fill: board_green
+        height: cell_height
       });
       rect.onmouseover = on_mouse_over;
       rect.onclick = on_click;
@@ -90,44 +88,40 @@ function draw_board(board_svg, frame_width, cell_width, cell_height) {
   //--- 罫線 -------------------------------------------
   for (i = 0; i < size; i++) {
     board_svg.appendChild(svg_util.createLine({
+      'class': 'rule',
       x1: (frame_width + cell_width) + cell_width * i,
       y1: frame_width,
       x2: (frame_width + cell_width) + cell_width * i,
-      y2: frame_width + cell_height * size,
-      stroke: 'black',
-      'stroke-width': 2
+      y2: frame_width + cell_height * size
     }));
   }
   for (i = 0; i < size; i++) {
     board_svg.appendChild(svg_util.createLine({
+      'class': 'rule',
       x1: frame_width,
       y1: (frame_width + cell_width) + cell_width * i,
       x2: frame_width + cell_height * size,
-      y2: (frame_width + cell_width) + cell_width * i,
-      stroke: 'black',
-      'stroke-width': 2
+      y2: (frame_width + cell_width) + cell_width * i
     }));
   }
 
   //-- 外枠 --------------------------------------------
   board_svg.appendChild(svg_util.createRect({
+    'class': 'frame',
     x: frame_width,
     y: frame_width,
     width : cell_width  * size,
-    height: cell_height * size,
-    fill: 'none',
-    stroke: 'black',
-    'stroke-width': frame_width / 2
+    height: cell_height * size
   }));
 
   //--- 4箇所のドット ----------------------------------
   for (i = 0; i < 2; i++) {
     for (j = 0; j < 2; j++) {
       board_svg.appendChild(svg_util.createCircle({
+        'class': 'dot',
         cx: (frame_width + cell_width  * 2) + cell_width  * half_size * i,
         cy: (frame_width + cell_height * 2) + cell_height * half_size * j,
-        r: 5,
-        fill: 'black'
+        r: 5
       }));
     }
   }
@@ -491,24 +485,15 @@ function rotate2(i, j, dr, dh, color1, color2) {
 
 function pass() {
   if (players[turn] === HUMAN) {
-    var pass_button = document.getElementById('pass');
-    pass_button.setAttribute('fill', 'pink');
     turn++;
     turn %= 2;
     turn_coloring(turn);
     pass_flag[turn] = 1;
-    setTimeout(pass_color_reset, 100);
   }
 }
 
-
-function pass_color_reset() {
-  var pass_button = document.getElementById('pass');
-  pass_button.setAttribute('fill', 'skyblue');
-}
-
 function turn_coloring(turn) {
-  var turn_stone = document.getElementById('turn_stone');
+  var turn_stone = document.getElementById('turn-stone');
   if (turn === BLACK_TURN) {
     turn_stone.setAttribute('fill', 'black');
   }
