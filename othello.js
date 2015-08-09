@@ -68,6 +68,15 @@ function set_board(evt) {
 function draw_board(board_svg, frame_width, cell_width, cell_height) {
   var i, j;
 
+  //-- 下地 --------------------------------------------
+  board_svg.appendChild(svg_util.createRect({
+    'class': 'ground',
+    x: frame_width,
+    y: frame_width,
+    width : cell_width  * size,
+    height: cell_height * size
+  }));
+
   //-- 各セルを個別の正方形として作成．クリック時のイベント処理のため．--------------------
   for (i = 1; i < size + 1; i++) {
     for (j = 1; j < size + 1; j++) {
@@ -104,15 +113,6 @@ function draw_board(board_svg, frame_width, cell_width, cell_height) {
       y2: (frame_width + cell_width) + cell_width * i
     }));
   }
-
-  //-- 外枠 --------------------------------------------
-  board_svg.appendChild(svg_util.createRect({
-    'class': 'frame',
-    x: frame_width,
-    y: frame_width,
-    width : cell_width  * size,
-    height: cell_height * size
-  }));
 
   //--- 4箇所のドット ----------------------------------
   for (i = 0; i < 2; i++) {

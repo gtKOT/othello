@@ -3,19 +3,19 @@
   stroke: none;
 }
 
-.cell {
+.ground {
+  stroke: black;
+  stroke-width: 5;  /* frame_width / 2 */
   fill: #208020;
+}
+
+.cell {
+  fill-opacity: 0;
 }
 
 .rule {
   stroke: black;
   stroke-width: 2;
-}
-
-.frame {
-  stroke: black;
-  stroke-width: 5;  /* frame_width / 2 */
-  fill: none;
 }
 
 .dot {
