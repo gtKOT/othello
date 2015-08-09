@@ -1,0 +1,42 @@
+.sheet {
+  fill: gray;
+  stroke: none;
+}
+
+.cell {
+  fill: #208020;
+}
+
+.rule {
+  stroke: black;
+  stroke-width: 2;
+}
+
+.frame {
+  stroke: black;
+  stroke-width: 5;  /* frame_width / 2 */
+  fill: none;
+}
+
+.dot {
+  fill: black;
+}
+
+.pass-button {
+  fill: skyblue;
+  stroke: none;
+}
+
+.pass-button:active {
+  fill: pink;
+}
+
+.pass-button-text {
+  fill: black;
+  font-size: 80px;
+}
+
+.turn-stone-holder {
+  fill: skyblue;
+  stroke: none;
+}
