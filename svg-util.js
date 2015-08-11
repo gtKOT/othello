@@ -13,11 +13,6 @@
   }
 
 
-  function createSVG(attributes) {
-    return _createSVGElement('svg', attributes);
-  }
-
-
   function createRect(attributes) {
     return _createSVGElement('rect', attributes);
   }
@@ -38,12 +33,17 @@
   }
 
 
+  function createText(attributes) {
+    return _createSVGElement('text', attributes);
+  }
+
+
   nSatohOthello.svgUtil = {
-    createSVG: createSVG,
     createRect: createRect,
     createLine: createLine,
     createCircle: createCircle,
-    createPath: createPath
+    createPath: createPath,
+    createText: createText
   };
 
 })(window.nSatohOthello, document);
