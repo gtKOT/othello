@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>NSatoh's Othello</title>
+
+  <link rel="stylesheet" href="othello.css">
+</head>
+<body>
+
+<script src="../namespace.js"></script>
+<script src="../svg-util.js"></script>
+<script src="../graph.js"></script>
+<script src="gen_graph_script.js"></script>
+<script src="lattice_graph_generator.js"></script>
+
+<div id="contents_sample_wrap">
+    <input type="button" value="Save this graph" id="export" onclick="setExport()"/>
+    <a id="download" target="_blank">Download link has not generated.</a>
+</div>
+
+
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1200" height="1200" viewBox="-100 -100 1000 1000"
+     onload="set_board(evt)">
+</svg>
+
+</body>
+</html>
