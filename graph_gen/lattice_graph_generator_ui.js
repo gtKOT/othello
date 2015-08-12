@@ -163,8 +163,8 @@ function setExport(){
   if (typeof Blob == 'undefined') {
     alert('Require FileAPI.');
   } else {
-    // wip: selected-->graphData
-    setBlobUrl('download', selected);
+    var graph_script = generateGraph();
+    setBlobUrl('download', graph_script);
   }
 }
 
@@ -180,11 +180,11 @@ function setBlobUrl(id, content) {
 
 
 function generateGraph(){
-  var vertices = getVertices;
+  var vertices = getVertices();
   var indices = getIndices(vertices);
   var adjoints = generateAdjoints();
-  
-  var graph_script = genGraphScript(vertices, indices, adjoints, directions);
+  var comment = generateCommentScript();
+  var graph_script = genGraphScript(vertices, indices, adjoints, directions, comment);
 
   return graph_script;
 }
@@ -211,11 +211,10 @@ function getIndices(vertices){
     }
   }
 
-  for (var v_k = 0; v_k < vertices.length(); v_k++){
+  for (var v_k = 0; v_k < vertices.length; v_k++){
     var v = vertices[v_k];
     indices[v[0]][v[1]] = v_k;
   }
-
   return indices;
 }
 
@@ -226,11 +225,12 @@ function generateAdjoints() {
     adjoints[i] = [];
     for (j = 0; j < size; j++){
       adjoints[i][j] = [];
-      for (di = -1; di <= 1; di++){
-        for (dj = -1; dj <= 1; dj++){
-          if (existsAdjoint(i + di, j + dj) && [di,dj] !== [0,0]) {
-            adjoints[i][j].push([i + di, j + dj]);
-          }
+      for (var k = 0; k < directions.length; k++){
+        di = directions[k][0];
+        dj = directions[k][1];
+        if (existsAdjoint(i + di, j + dj)) {
+          adjoints[i][j].push({direction: k,
+                               terminal:  [i + di, j + dj]});
         }
       }
     }
@@ -248,4 +248,15 @@ function existsAdjoint(i,j) {
   }
 
   return false;
+}
+
+
+function generateCommentScript(){
+  var comment = '  /*-- directions --\n' +
+                '        0  1  2\n' +
+                '        3  x  4\n' +
+                '        5  6  7\n' +
+                '  -----------------*/\n';
+
+  return comment;
 }
