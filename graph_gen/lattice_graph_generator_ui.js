@@ -3,7 +3,7 @@
 var svg_util = window.nSatohOthello.svgUtil;
 var genGraphScript = window.nSatohOthello.genGraphScript;
 
-var size = 15;
+var size = 18;
 var cell_size = 20;
 var interval_size = 5;
 var circle_adjust = -6;
@@ -257,6 +257,12 @@ function generateCommentScript(){
                 '        3  x  4\n' +
                 '        5  6  7\n' +
                 '  -----------------*/\n';
+ 
+  var clipped_data = clippingData();
+  var i_size = clipped_data.i_size;
+  var j_size = clipped_data.j_size;
+  var has_cell = clipped_data.data;  
+
   
   var CORNER          = '+';
   var HORIZONTAL_EDGE = '---';
@@ -270,33 +276,82 @@ function generateCommentScript(){
   comment += '\n' + 
              '  /*\n';
 
-  for (i = 0; i < size; i++){
+  for (i = 1; i < i_size; i++){
     
     // horizontal-edges and corners
     comment += '  ';
-    for (j = 0; j < size; j++){
-      if ((selected[i-1] !== undefined && selected[i-1][j-1] !== undefined && selected[i-1][j-1]) ||
-          (selected[i-1] !== undefined &&                                     selected[i-1][j])   ||
-                                         (selected[i][j-1]   !== undefined && selected[i][j-1])   ||
-                                                                               (selected[i][j])     ) {
+    for (j = 1; j < j_size; j++){
+      if ((has_cell[i-1][j-1]) || (has_cell[i-1][j]) ||
+          (has_cell[i][j-1])   || (has_cell[i][j])) {
         comment += CORNER;
       } else {
         comment += EMPTY_CORNER;
       }
-      if ((selected[i-1] !== undefined && selected[i-1][j]) ||
-                                         (selected[i][j])     ) {
+      if ((has_cell[i-1][j]) || (has_cell[i][j])) {
         comment += HORIZONTAL_EDGE;
       } else {
         comment += EMPTY_H_EDGE;
       }
     }
-    if ((selected[i-1] !== undefined && selected[i-1][size-1]) || (selected[i][size-1])){
-      comment += CORNER + '\n';
-    } else {
-      comment += '\n';
-    } 
+    comment += '\n';
+
+    // vertical-edges and cells
+    comment += '  ';
+    for (j = 1; j < j_size; j++){
+      if ((has_cell[i][j-1]) || (has_cell[i][j])) {
+        comment += VERTICAL_EDGE;
+      } else {
+        comment += EMPTY_V_EDGE;
+      }
+      if (has_cell[i][j]) {
+        comment += CELL_FILLING;
+      } else {
+        comment += EMPTY_CELL;
+      }
+    }
+    comment += '\n';
   }
-    
+
+  comment += '  */';
+  
   return comment;
 }
 
+
+// clipping the list "selected" and extend by adding sentinel-node arround it.
+function clippingData(){
+  // size check
+  var i_min = size;
+  var i_max = 0;
+  var j_min = size;
+  var j_max = 0;
+  for (i = 0; i < size; i++){
+    for (j = 0; j < size; j++){
+      if (selected[i][j]){
+        i_min = (i_min > i) ? i : i_min;
+        i_max = (i_max < i) ? i : i_max;
+        j_min = (j_min > j) ? j : j_min;
+        j_max = (j_max < j) ? j : j_max;
+      }
+    }
+  }
+  
+  var i_size = i_max - i_min + 1;  
+  var j_size = j_max - j_min + 1;  
+  var clipped_data = [];
+
+  for (i = 0; i < i_size + 2; i++){
+    clipped_data[i] = [];
+    for (j = 0; j < j_size + 2; j++){
+      if (i === 0 || i === i_size + 1 || j === 0 || j === j_size + 1){
+        clipped_data[i][j] = false; // sentinel
+      } else {
+        clipped_data[i][j] = selected[i_min + i - 1][j_min + j - 1];
+      }
+    }
+  }
+
+  return {data: clipped_data,
+          i_size: i_size + 2,
+          j_size: j_size + 2};
+}
