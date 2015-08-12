@@ -257,6 +257,46 @@ function generateCommentScript(){
                 '        3  x  4\n' +
                 '        5  6  7\n' +
                 '  -----------------*/\n';
+  
+  var CORNER          = '+';
+  var HORIZONTAL_EDGE = '---';
+  var VERTICAL_EDGE   = '|';
+  var CELL_FILLING    = '///';
+  var EMPTY_CORNER    = ' ';
+  var EMPTY_H_EDGE    = '   ';
+  var EMPTY_V_EDGE    = ' ';
+  var EMPTY_CELL      = '   ';
 
+  comment += '\n' + 
+             '  /*\n';
+
+  for (i = 0; i < size; i++){
+    
+    // horizontal-edges and corners
+    comment += '  ';
+    for (j = 0; j < size; j++){
+      if ((selected[i-1] !== undefined && selected[i-1][j-1] !== undefined && selected[i-1][j-1]) ||
+          (selected[i-1] !== undefined &&                                     selected[i-1][j])   ||
+                                         (selected[i][j-1]   !== undefined && selected[i][j-1])   ||
+                                                                               (selected[i][j])     ) {
+        comment += CORNER;
+      } else {
+        comment += EMPTY_CORNER;
+      }
+      if ((selected[i-1] !== undefined && selected[i-1][j]) ||
+                                         (selected[i][j])     ) {
+        comment += HORIZONTAL_EDGE;
+      } else {
+        comment += EMPTY_H_EDGE;
+      }
+    }
+    if ((selected[i-1] !== undefined && selected[i-1][size-1]) || (selected[i][size-1])){
+      comment += CORNER + '\n';
+    } else {
+      comment += '\n';
+    } 
+  }
+    
   return comment;
 }
+
