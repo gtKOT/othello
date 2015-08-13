@@ -12,7 +12,12 @@
     return element;
   }
 
+  
+  function createSVG(attributes) {
+    return _createSVGElement('svg', attributes);
+  }
 
+  
   function createRect(attributes) {
     return _createSVGElement('rect', attributes);
   }
@@ -39,6 +44,7 @@
 
 
   nSatohOthello.svgUtil = {
+    createSVG: createSVG,
     createRect: createRect,
     createLine: createLine,
     createCircle: createCircle,
