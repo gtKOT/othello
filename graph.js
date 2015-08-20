@@ -21,6 +21,10 @@
     this._edges = [];
   }
 
+  Vertex.prototype.getId = function(){
+    return this._id;
+  };
+  
   Vertex.prototype.addEdge = function(terminalVertex, direction){
     var newEdge = new Edge(terminalVertex, direction);
     this._edges.push(newEdge, direction);
