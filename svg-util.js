@@ -42,6 +42,11 @@
     return _createSVGElement('text', attributes);
   }
 
+  
+  function createG(attributes) {
+    return _createSVGElement('g', attributes);
+  }
+
 
   nSatohOthello.svgUtil = {
     createSVG: createSVG,
@@ -49,7 +54,8 @@
     createLine: createLine,
     createCircle: createCircle,
     createPath: createPath,
-    createText: createText
+    createText: createText,
+    createG: createG
   };
 
 })(window.nSatohOthello, document);
