@@ -14,7 +14,7 @@
   
    
   function draw_board(board_svg, cell_width, cell_height, graph_data, cell_directions) {
-    var i, j;
+    var i, j, k;
 
     /*-- sample --
       <g transform="translate(100,100)">
@@ -71,7 +71,7 @@
       // このcell用のqueueにある子グループの各child_cellを，
       // このcellの位置 - direction 分だけ移動してこのセルグループに結合させる．
       var queue = suspended_group_queues[cell.id] || []; // undefined回避
-      for (var k = 0; k < queue.length; k++ ) {
+      for (k = 0; k < queue.length; k++ ) {
         var child_group_id = queue[k].group;
         var direction_to_parent = queue[k].direction;
         var child_group = groups[child_group_id];
@@ -100,35 +100,19 @@
 
     
     //-- 下地 --------------------------------------------
-    group_of_cells.appendChild(svg_util.createRect({
-      'class': 'ground',
-      x: 0,
-      y: 0,
-      width : cell_width,
-      height: cell_height
-    }));
-   
-    //--- 罫線 -------------------------------------------
-    for (i = 1; i <= size - 1; i++) {
-      group_of_cells.appendChild(svg_util.createLine({
-        'class': 'rule',
-        x1: cell_width * i,
-        y1: 0,
-        x2: cell_width * i,
-        y2: cell_height * size
+    for (k = 0; k < cells.length; k++ ){
+      group_of_cells.appendChild(svg_util.createRect({
+        'class': 'ground',
+        x: cells[k].x,
+        y: cells[k].y,
+        width : cell_width,
+        height: cell_height
       }));
-    }
-    for (i = 1; i <= size - 1; i++) {
-      board_svg.appendChild(svg_util.createLine({
-        'class': 'rule',
-        x1: 0,
-        y1: cell_width * i,
-        x2: cell_height * size,
-        y2: cell_width * i
-      }));
-    }
+    }   
    
     //--- 4箇所のドット ----------------------------------
+    /* 石の初期配置とともに，init_dataみたいなものを作って，それをうけ取って描画させよう．
+       一旦切る
     for (i = 0; i < 2; i++) {
       for (j = 0; j < 2; j++) {
         group_of_cells.appendChild(svg_util.createCircle({
@@ -139,6 +123,7 @@
         }));
       }
     }
+    */
   }
 
   nSatohOthello.draw_board = draw_board;
