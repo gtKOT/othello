@@ -36,6 +36,25 @@
   };
 
   // レンダラ用 多分あった方が便利
+  // 最小の終端点idを持つedgeを返す．
+  Vertex.prototype.GetMinEdge = function() {
+    var edges = this.getEdges();
+    var min_edge = edges[0];
+    var min_id = min_edge.getTerminal().getId();
+    
+    for (k = 1; k < edges.length; k++){
+      var edge = edges[k];
+      var edge_id = edge.getTerminal().getId();
+      if (edge_id < min_id) {
+        min_edge = edge;
+        min_id = edge_id;
+      }
+    }
+    
+    return min_edge;
+  };
+
+  // 使わないかもしれん
   Vertex.prototype.GetMinTerminalId = function() {
     var edges = this.getEdges();
     return Math.min.apply(
