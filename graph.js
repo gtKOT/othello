@@ -27,8 +27,7 @@
   };
   
   Vertex.prototype.addEdge = function(terminalVertex, direction){
-    var newEdge = new Edge(terminalVertex, direction);
-    this._edges.push(newEdge, direction);
+    this._edges.push(new Edge(terminalVertex, direction));
   };
 
   Vertex.prototype.getEdges = function() {
@@ -55,7 +54,7 @@
   };
 
   // 使わないかもしれん
-  Vertex.prototype.GetMinTerminalId = function() {
+  Vertex.prototype.getMinTerminalId = function() {
     var edges = this.getEdges();
     return Math.min.apply(
       null,
