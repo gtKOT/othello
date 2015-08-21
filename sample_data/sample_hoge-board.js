@@ -270,5 +270,6 @@
   v[81].addEdge(v[78], 3);
 
   nSatohOthello.graphData = graph_data;
+  nSatohOthello.graphDirections = graph_directions;
 
 })(window.nSatohOthello);

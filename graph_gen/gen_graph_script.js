@@ -29,6 +29,7 @@
     
     graph_script += '\n' + 
                     '  nSatohOthello.graphData = graph_data;\n\n' + 
+                    '  nSatohOthello.graphDirections = graph_directions;\n\n' + 
                     '})(window.nSatohOthello);';
     return graph_script;
 
