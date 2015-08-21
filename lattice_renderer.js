@@ -53,11 +53,16 @@
         cell.group = parent_cell.group;
         cell.x = parent_cell.x - direction_vector[0] * cell_width;
         cell.y = parent_cell.y - direction_vector[1] * cell_height;
+        //##############
+        console.log('cell ' + cell.id + ' --> group ' + cell.group);
         groups[cell.group].push(cell);
       } else {
         // 新規セルグループ
         cell.group = group_id;
         group_id ++;
+        //##############
+        console.log('cell ' + cell.id + ' --> new group ' + cell.group);
+        console.log('(group_id increament: ' + group_id );
         cell.x = 0; // 気持ちの上ではここを - direction_vector[0] * cell_width にしたい(というか new Cell(v)の時点でしたい)が
         cell.y = 0; // initial cellだけ処理を変えないと面倒になりそうなのでそうしない．
         groups[cell.group] = [cell];
@@ -83,8 +88,11 @@
         }
 
         // 子グループを親グループに統合
-        groups[cell.id] += groups[child_group_id];
+        Array.prototype.push.apply(groups[cell.group], groups[child_group_id]);
         groups[child_group_id] = null;
+        //##############
+        console.log('group ' + child_group_id + ' --> concat to group ' + cell.group);
+        console.log('(now group ' + child_group_id + ' is null)' );
       }                  
     }
 
@@ -98,9 +106,9 @@
 
     board_svg.appendChild(group_of_cells);
 
-    
-    //-- 下地 --------------------------------------------
-    for (k = 0; k < cells.length; k++ ){
+ 
+    //-- 下地 --------------------------------------------   
+    for (k in cells){
       group_of_cells.appendChild(svg_util.createRect({
         'class': 'ground',
         x: cells[k].x,
@@ -109,7 +117,8 @@
         height: cell_height
       }));
     }   
-   
+
+    
     //--- 4箇所のドット ----------------------------------
     /* 石の初期配置とともに，init_dataみたいなものを作って，それをうけ取って描画させよう．
        一旦切る
