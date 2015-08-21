@@ -7,6 +7,7 @@
   function Graph(numberOfVertices) {
     this._vertices = [];
     for (k = 0; k < numberOfVertices; k++){
+      // vertex は，idが小さい順に格納される．
       this._vertices.push(new Vertex()); 
     }
   }
@@ -32,6 +33,15 @@
 
   Vertex.prototype.getEdges = function() {
     return this._edges;
+  };
+
+  // レンダラ用 多分あった方が便利
+  Vertex.prototype.GetMinTerminalId = function() {
+    var edges = this.getEdges();
+    return Math.min.apply(
+      null,
+      edges.map(function (x) {return x.getTerminal().getId();})
+    );
   };
 
   
