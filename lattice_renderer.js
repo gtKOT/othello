@@ -65,8 +65,6 @@
         if (x.group > y.group) return 1;
         return 0;
       });
-      //##############
-      console.log(adjoint_groups.map(function(x){return x.group;}));
       
       if (adjoint_groups.length > 0) {
         // 既存のセルグループに追加
@@ -77,8 +75,6 @@
         cell.group = parent_group;
         cell.x = cells[parent_v_id].x - to_parent[0] * cell_width;
         cell.y = cells[parent_v_id].y - to_parent[1] * cell_height;
-        //##############
-        console.log('cell ' + cell.id + ' --> group ' + cell.group);
         groups[cell.group].push(cell);
 
         // 残りのグループたちをこのセルに結合
@@ -92,23 +88,17 @@
             child_cell.x += cell.x - vector_to_linked_cell[0] + direction_to_bond[0] * cell_width;
             child_cell.y += cell.y - vector_to_linked_cell[1] + direction_to_bond[1] * cell_height;
             child_cell.group = parent_group;
-          } // 結合の仕方がバグを含んでいる．これだと常に，groupのfirst-cellをbondに結合させてしまう．
-        
+          }
+          
           // 子グループを親グループに統合
           Array.prototype.push.apply(groups[parent_group], groups[child_group]);
           groups[child_group] = null;
-          //##############
-          console.log('group ' + child_group + ' --> concat to group ' + parent_group);
-          console.log('(now group ' + child_group + ': ' + groups[child_group] +')');
         }
         
       } else {
         // 新規セルグループ
         cell.group = group_id;
         group_id ++;
-        //##############
-        console.log('cell ' + cell.id + ' --> new group ' + cell.group);
-        console.log('(group_id increament: ' + group_id  + ')');
         cell.x = 0;
         cell.y = 0;
         groups[cell.group] = [cell];
