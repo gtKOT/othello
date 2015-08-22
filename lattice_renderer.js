@@ -26,74 +26,91 @@
     // id: CellObject の形で格納する．現状では配列と大差ない．
     var cells = {};
 
-    // 各頂点の座標決定を待っているグループidを記録
-    // cell_id: [{group_id, direction}, ...] の形
-    var suspended_group_queues = {};
-
     // グループに属しているcellを，id: [cell, ...]の形で格納する
     var groups = {};
-    
+        
     // 各頂点に対応するセルの座標を決定
-
     var vertices = graph_data.getVertices();
     var group_id = 0;
     for (var v_num = 0; v_num < vertices.length; v_num++) {
       var v = vertices[v_num];
+      var v_id = v.getId();
       var cell = new Cell(v);
-      cells[cell.id] = cell;
+      cells[v_id] = cell;
+
+      var edges = v.getEdges();
+      var adjoint_groups = [];
+      var found_groups = {};
+      for (var e_num = 0; e_num < edges.length; e_num++ ) {
+        var terminal_v = edges[e_num].getTerminal();
+        var terminal_v_id = terminal_v.getId();
+        if (terminal_v_id < v_id) {
+          var terminal_v_group = cells[terminal_v_id].group;
+          // ここで重複は排除しておきたい．
+          if (found_groups[terminal_v_group] === undefined) {
+            found_groups[terminal_v_group] = true;
+            adjoint_groups.push({
+              group:      terminal_v_group,
+              terminalId: terminal_v_id,
+              direction:  edges[e_num].getDirection()
+            });
+          }
+        }
+      }
+
+      // グループ番号の若い順にソート
+      adjoint_groups.sort(function(x,y){
+        if (x.group < y.group) return -1;
+        if (x.group > y.group) return 1;
+        return 0;
+      });      
       
-      var min_edge = v.getMinEdge();
-      var min_terminal_id = min_edge.getTerminal().getId();
-      var direction_vector = cell_directions[min_edge.getDirection()];
-      
-      if (v.getId() > min_terminal_id) {
+      if (adjoint_groups.length > 0) {
         // 既存のセルグループに追加
-        var parent_cell = cells[min_terminal_id];
+        var parent_group = adjoint_groups[0].group;
+        var parent_v_id = adjoint_groups[0].terminalId;
+        var to_parent = cell_directions[adjoint_groups[0].direction];
         
-        cell.group = parent_cell.group;
-        cell.x = parent_cell.x - direction_vector[0] * cell_width;
-        cell.y = parent_cell.y - direction_vector[1] * cell_height;
+        cell.group = parent_group;
+        cell.x = cells[parent_v_id].x - to_parent[0] * cell_width;
+        cell.y = cells[parent_v_id].y - to_parent[1] * cell_height;
         //##############
         console.log('cell ' + cell.id + ' --> group ' + cell.group);
         groups[cell.group].push(cell);
+
+        // 残りのグループたちをこのセルに結合
+        for (k = 1; k < adjoint_groups.length; k++ ) {
+          var child_group = adjoint_groups[k].group;
+          var direction_to_bond = cell_directions[adjoint_groups[k].direction];
+          console.log([cell.x, direction_to_bond]);
+          for (var cell_k = 0; cell_k < child_group.length; cell_k++ ) {
+            var child_cell = child_group[cell_k];
+            child_cell.x += cell.x - direction_to_bond[0] * cell_width;
+            child_cell.y += cell.y - direction_to_bond[1] * cell_height;
+            child_cell.group = parent_group;
+          }
+        
+          // 子グループを親グループに統合
+          Array.prototype.push.apply(groups[parent_group], groups[child_group]);
+          groups[child_group] = null;
+          //##############
+          console.log('group ' + child_group + ' --> concat to group ' + parent_group);
+          console.log('(now group ' + child_group + ': ' + groups[child_group] +')');
+        }
+        
       } else {
         // 新規セルグループ
         cell.group = group_id;
         group_id ++;
         //##############
         console.log('cell ' + cell.id + ' --> new group ' + cell.group);
-        console.log('(group_id increament: ' + group_id );
-        cell.x = 0; // 気持ちの上ではここを - direction_vector[0] * cell_width にしたい(というか new Cell(v)の時点でしたい)が
-        cell.y = 0; // initial cellだけ処理を変えないと面倒になりそうなのでそうしない．
+        console.log('(group_id increament: ' + group_id  + ')');
+        cell.x = 0;
+        cell.y = 0;
         groups[cell.group] = [cell];
-        if (v_num > 0){ // 最初のvertexはqueueに入れない．
-          // 未定義なら空リスト作成
-          suspended_group_queues[min_terminal_id] = suspended_group_queues[min_terminal_id] || [];
-          suspended_group_queues[min_terminal_id].push({group:cell.group, direction:direction_vector});
-        }
       }
 
-      // このcell用のqueueにある子グループの各child_cellを，
-      // このcellの位置 - direction 分だけ移動してこのセルグループに結合させる．
-      var queue = suspended_group_queues[cell.id] || []; // undefined回避
-      for (k = 0; k < queue.length; k++ ) {
-        var child_group_id = queue[k].group;
-        var direction_to_parent = queue[k].direction;
-        var child_group = groups[child_group_id];
-        for (var cell_k = 0; cell_k < child_group.length; cell_k++ ) {
-          var child_cell = child_group[cell_k];
-          child_cell.x += cell.x - direction_to_parent[0] * cell_width;
-          child_cell.y += cell.y - direction_to_parent[1] * cell_height;
-          child_cell.group = cell.group;
-        }
-
-        // 子グループを親グループに統合
-        Array.prototype.push.apply(groups[cell.group], groups[child_group_id]);
-        groups[child_group_id] = null;
-        //##############
-        console.log('group ' + child_group_id + ' --> concat to group ' + cell.group);
-        console.log('(now group ' + child_group_id + ' is null)' );
-      }                  
+                        
     }
 
 
@@ -106,7 +123,7 @@
 
     board_svg.appendChild(group_of_cells);
 
- 
+    window.debugCells = cells; 
     //-- 下地 --------------------------------------------   
     for (k in cells){
       group_of_cells.appendChild(svg_util.createRect({
