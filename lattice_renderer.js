@@ -85,10 +85,12 @@
         for (k = 1; k < adjoint_groups.length; k++ ) {
           var child_group = groups[adjoint_groups[k].group];
           var direction_to_bond = cell_directions[adjoint_groups[k].direction];
+          var linked_cell_id = [adjoint_groups[k].terminalId];
+          var vector_to_linked_cell = [cells[linked_cell_id].x, cells[linked_cell_id].y];
           for (var cell_k = 0; cell_k < child_group.length; cell_k++ ) {
             var child_cell = child_group[cell_k];
-            child_cell.x += cell.x + direction_to_bond[0] * cell_width;
-            child_cell.y += cell.y + direction_to_bond[1] * cell_height;
+            child_cell.x += cell.x - vector_to_linked_cell[0] + direction_to_bond[0] * cell_width;
+            child_cell.y += cell.y - vector_to_linked_cell[1] + direction_to_bond[1] * cell_height;
             child_cell.group = parent_group;
           } // 結合の仕方がバグを含んでいる．これだと常に，groupのfirst-cellをbondに結合させてしまう．
         
