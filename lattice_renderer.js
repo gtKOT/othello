@@ -46,6 +46,7 @@
         var terminal_v_id = terminal_v.getId();
         if (terminal_v_id < v_id) {
           var terminal_v_group = cells[terminal_v_id].group;
+          console.log(terminal_v_group);
           // ここで重複は排除しておきたい．
           if (found_groups[terminal_v_group] === undefined) {
             found_groups[terminal_v_group] = true;
@@ -63,7 +64,9 @@
         if (x.group < y.group) return -1;
         if (x.group > y.group) return 1;
         return 0;
-      });      
+      });
+      //##############
+      console.log(adjoint_groups.map(function(x){return x.group;}));
       
       if (adjoint_groups.length > 0) {
         // 既存のセルグループに追加
@@ -80,15 +83,14 @@
 
         // 残りのグループたちをこのセルに結合
         for (k = 1; k < adjoint_groups.length; k++ ) {
-          var child_group = adjoint_groups[k].group;
+          var child_group = groups[adjoint_groups[k].group];
           var direction_to_bond = cell_directions[adjoint_groups[k].direction];
-          console.log([cell.x, direction_to_bond]);
           for (var cell_k = 0; cell_k < child_group.length; cell_k++ ) {
             var child_cell = child_group[cell_k];
-            child_cell.x += cell.x - direction_to_bond[0] * cell_width;
-            child_cell.y += cell.y - direction_to_bond[1] * cell_height;
+            child_cell.x += cell.x + direction_to_bond[0] * cell_width;
+            child_cell.y += cell.y + direction_to_bond[1] * cell_height;
             child_cell.group = parent_group;
-          }
+          } // 結合の仕方がバグを含んでいる．これだと常に，groupのfirst-cellをbondに結合させてしまう．
         
           // 子グループを親グループに統合
           Array.prototype.push.apply(groups[parent_group], groups[child_group]);
