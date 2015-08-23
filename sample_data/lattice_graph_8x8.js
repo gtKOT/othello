@@ -28,7 +28,7 @@
                                       
   */
   var Graph = window.nSatohOthello.Graph;
-  var graph_directions = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]];
+  var graph_directions = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
   var graph_data = new Graph(64);
   var v = graph_data.getVertices();
 

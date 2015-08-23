@@ -1,6 +1,9 @@
 'use strict';
 
 var svg_util = window.nSatohOthello.svgUtil;
+var graph_data = window.nSatohOthello.graphData;
+var cell_directions = window.nSatohOthello.graphDirections;
+var draw_board = window.nSatohOthello.draw_board;
 
 var half_size = 4;
 var size = half_size * 2;
@@ -59,61 +62,19 @@ function set_board(evt) {
   var cell_height = 80;
 
   var svgsvg = evt.target;
-  draw_board(svgsvg, cell_width, cell_height);
+  draw_board(svgsvg, cell_width, cell_height, graph_data, cell_directions);
   draw_stones(svgsvg, cell_width, cell_height);
 }
 
 
-function draw_board(board_svg, cell_width, cell_height) {
-  var i, j;
-
-  //-- 下地 --------------------------------------------
-  board_svg.appendChild(svg_util.createRect({
-    'class': 'ground',
-    x: 0,
-    y: 0,
-    width : cell_width  * size,
-    height: cell_height * size
-  }));
-
-  //--- 罫線 -------------------------------------------
-  for (i = 1; i <= size - 1; i++) {
-    board_svg.appendChild(svg_util.createLine({
-      'class': 'rule',
-      x1: cell_width * i,
-      y1: 0,
-      x2: cell_width * i,
-      y2: cell_height * size
-    }));
-  }
-  for (i = 1; i <= size - 1; i++) {
-    board_svg.appendChild(svg_util.createLine({
-      'class': 'rule',
-      x1: 0,
-      y1: cell_width * i,
-      x2: cell_height * size,
-      y2: cell_width * i
-    }));
-  }
-
-  //--- 4箇所のドット ----------------------------------
-  for (i = 0; i < 2; i++) {
-    for (j = 0; j < 2; j++) {
-      board_svg.appendChild(svg_util.createCircle({
-        'class': 'dot',
-        cx: cell_width  * 2 + cell_width  * half_size * i,
-        cy: cell_height * 2 + cell_height * half_size * j,
-        r: 5
-      }));
-    }
-  }
-}
 
 
 function draw_stones(board_svg, cell_width, cell_height) {
   var i, j;
 
   //--- 各セルの石：回転アニメーションのために3パーツに分割 ----------------------------------
+  // <g>要素でまとめて取り扱えば，単に平行移動するだけのことで，
+  // 各石の中の細かい座標を考える必要はなくなりそうだ．
   var st_l, st_c, st_r, dr, dh, d_left, d_center, d_right;
 
   for (i = 1; i < size + 1; i++) {
