@@ -225,8 +225,8 @@ function generateAdjoints() {
     for (j = 0; j < size; j++){
       adjoints[i][j] = [];
       for (var k = 0; k < directions_xy.length; k++){
-        di = directions_xy[k][0];
-        dj = directions_xy[k][1];
+        di = directions_xy[k][1];
+        dj = directions_xy[k][0];
         if (existsAdjoint(i + di, j + dj)) {
           adjoints[i][j].push({direction: k,
                                terminal:  [i + di, j + dj]});
