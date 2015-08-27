@@ -48,10 +48,6 @@
 
     return list_script;
   }
-  
-  function generateCommentDiagram(vertices, indices, adjoints, directions){
-    return null;
-  }
 
   nSatohOthello.genGraphScript = genGraphScript;
   
