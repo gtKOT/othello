@@ -19,9 +19,9 @@ for (i = 0; i < size; i++){
 }
 
 // lattice direction
-var directions = [[-1,-1], [0,-1], [1,-1],  //  0  1  2
-                  [-1, 0],         [1, 0],  //  3  x  4
-                  [-1, 1], [0, 1], [1, 1]]; //  5  6  7
+var directions_xy = [[-1,-1], [0,-1], [1,-1],  //  0  1  2
+                     [-1, 0],         [1, 0],  //  3  x  4
+                     [-1, 1], [0, 1], [1, 1]]; //  5  6  7
 
 
 function set_board(evt) {
@@ -98,7 +98,6 @@ function set_board(evt) {
     text.textContent = (i + 1);
     svgsvg.appendChild(text);
   }
-  
 }
 
 
@@ -184,7 +183,7 @@ function generateGraph(){
   var indices = getIndices(vertices);
   var adjoints = generateAdjoints();
   var comment = generateCommentScript();
-  var graph_script = genGraphScript(vertices, indices, adjoints, directions, comment);
+  var graph_script = genGraphScript(vertices, indices, adjoints, directions_xy, comment);
 
   return graph_script;
 }
@@ -225,9 +224,9 @@ function generateAdjoints() {
     adjoints[i] = [];
     for (j = 0; j < size; j++){
       adjoints[i][j] = [];
-      for (var k = 0; k < directions.length; k++){
-        di = directions[k][0];
-        dj = directions[k][1];
+      for (var k = 0; k < directions_xy.length; k++){
+        di = directions_xy[k][0];
+        dj = directions_xy[k][1];
         if (existsAdjoint(i + di, j + dj)) {
           adjoints[i][j].push({direction: k,
                                terminal:  [i + di, j + dj]});
