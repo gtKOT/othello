@@ -119,23 +119,10 @@ function draw_stones(board_svg) {
     stones[i] = [];
 
     for (j = 1; j < size + 1; j++) {
-      var cell = svg_util.createSVG({
-        'class': 'cell',
-        id: to_id(i, j),
-        x: cell_width  * (i - 1),
-        y: cell_height * (j - 1),
-        width : cell_width,
-        height: cell_height,
-        viewBox: [0, 0, cell_width, cell_height].join(' ')
-      });
-      cell.onmouseover = on_mouse_over_cell;
-      cell.onmouseout  = on_mouse_out_cell;
-      cell.onclick = on_click_cell;
-
       var stone_center_x = cell_width  / 2;
       var stone_center_y = cell_height / 2;
 
-      dr = stone_radius * Math.cos(0);
+      dr = stone_radius    * Math.cos(0);
       dh = stone_thickness * Math.sin(0);
 
       d_left = [
@@ -160,9 +147,51 @@ function draw_stones(board_svg) {
         svg_util.relA(dr, stone_radius, 0, -2 * stone_radius)
       ].join(' ');
 
-      st_l = svg_util.createPath({d: d_left,   fill: 'black', 'fill-opacity': 0});
-      st_c = svg_util.createPath({d: d_center, fill: 'white', 'fill-opacity': 0});
-      st_r = svg_util.createPath({d: d_right,  fill: 'white', 'fill-opacity': 0});
+      stones[i][j] = {
+        left  : svg_util.createPath({d: d_left,   fill: 'black', 'fill-opacity': 0}),
+        center: svg_util.createPath({d: d_center, fill: 'white', 'fill-opacity': 0}),
+        right : svg_util.createPath({d: d_right,  fill: 'white', 'fill-opacity': 0})
+      };
+    }
+  }
+
+  // cell_conditionsに従って、石を色付け
+  for (i = 0; i < cell_conditions.length; i++) {
+    for (j = 0; j < cell_conditions[i].length; j++) {
+      if (cell_conditions[i][j] === EMPTY) {
+        continue;
+      }
+      var stone_color = (cell_conditions[i][j] === BLACK) ? 'black' : 'white';
+      coloring_stone(stones[i][j], stone_color);
+    }
+  }
+
+  // 描画
+  var fragment = document.createDocumentFragment();
+
+  for (i = 0; i < stones.length; i++) {
+    if (stones[i] == null) {
+      continue;
+    }
+
+    for (j = 0; j < stones[i].length; j++) {
+      var stone = stones[i][j];
+      if (stone == null) {
+        continue;
+      }
+
+      var cell = svg_util.createSVG({
+        'class': 'cell',
+        id: to_id(i, j),
+        x: cell_width  * (i - 1),
+        y: cell_height * (j - 1),
+        width : cell_width,
+        height: cell_height,
+        viewBox: [0, 0, cell_width, cell_height].join(' ')
+      });
+      cell.onmouseover = on_mouse_over_cell;
+      cell.onmouseout  = on_mouse_out_cell;
+      cell.onclick = on_click_cell;
 
       // mouse反応領域用
       var cell_ground = svg_util.createRect({
@@ -171,29 +200,15 @@ function draw_stones(board_svg) {
       });
 
       cell.appendChild(cell_ground);
-      cell.appendChild(st_l);
-      cell.appendChild(st_c);
-      cell.appendChild(st_r);
-      board_svg.appendChild(cell);
+      cell.appendChild(stone.left);
+      cell.appendChild(stone.center);
+      cell.appendChild(stone.right);
 
-      stones[i][j] = {
-        left  : st_l,
-        center: st_c,
-        right : st_r
-      };
+      fragment.appendChild(cell);
     }
   }
 
-  for (i = 0; i < cell_conditions.length; i++) {
-    for (j = 0; j < cell_conditions[i].length; j++) {
-      if (cell_conditions[i][j] === EMPTY) {
-        continue;
-      }
-      var stone = stones[i][j];
-      var stone_color = (cell_conditions[i][j] === BLACK) ? 'black' : 'white';
-      coloring_stone(stone, stone_color);
-    }
-  }
+  board_svg.appendChild(fragment);
 }
 
 
