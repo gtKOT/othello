@@ -142,25 +142,25 @@ function draw_stones(board_svg) {
       dh = stone_thickness * Math.sin(0);
 
       d_left = [
-        absM(stone_center_x - dh, stone_center_y - stone_radius),
-        relH(dh),
-        relA(dr, stone_radius, 0, 2 * stone_radius),
-        relH(-dh),
-        relA(dr, stone_radius, 0, -2 * stone_radius, { clockwise: true })
+        svg_util.absM(stone_center_x - dh, stone_center_y - stone_radius),
+        svg_util.relH(dh),
+        svg_util.relA(dr, stone_radius, 0, 2 * stone_radius),
+        svg_util.relH(-dh),
+        svg_util.relA(dr, stone_radius, 0, -2 * stone_radius, { clockwise: true })
       ].join(' ');
 
       d_center = [
-        absM(stone_center_x, stone_center_y - stone_radius),
-        relH(dh),
-        relA(dr, stone_radius, 0, 2 * stone_radius),
-        relH(-dh),
-        relA(dr, stone_radius, 0, -2 * stone_radius, { clockwise: true })
+        svg_util.absM(stone_center_x, stone_center_y - stone_radius),
+        svg_util.relH(dh),
+        svg_util.relA(dr, stone_radius, 0, 2 * stone_radius),
+        svg_util.relH(-dh),
+        svg_util.relA(dr, stone_radius, 0, -2 * stone_radius, { clockwise: true })
       ].join(' ');
 
       d_right = [
-        absM(stone_center_x + dh, stone_center_y - stone_radius),
-        relA(dr, stone_radius, 0,  2 * stone_radius),
-        relA(dr, stone_radius, 0, -2 * stone_radius)
+        svg_util.absM(stone_center_x + dh, stone_center_y - stone_radius),
+        svg_util.relA(dr, stone_radius, 0,  2 * stone_radius),
+        svg_util.relA(dr, stone_radius, 0, -2 * stone_radius)
       ].join(' ');
 
       st_l = svg_util.createPath({d: d_left,   fill: 'black', 'fill-opacity': 0});
@@ -202,37 +202,6 @@ function draw_stones(board_svg) {
   });
   helper_stone.onclick = on_click_circle;
   board_svg.appendChild(helper_stone);
-}
-
-function absM(x, y) {
-  return 'M' + [x, y].join(',');
-}
-
-function relH(dx) {
-  return 'h' + dx;
-}
-
-/**
- * @param {number} rx
- * @param {number} ry
- * @param {number} ex
- * @param {number} ey
- * @param {Object} [options]
- * @param {number} [options.rotate]
- * @param {boolean} [options.large_arc]
- * @param {boolean} [options.clockwise]
- * @returns {string}
- */
-function relA(rx, ry, ex, ey, options) {
-  options = options || {};
-  var x_axis_rotation = options.rotate || 0;
-  var large_arc_flag  = (options.large_arc) ? 1 : 0;
-  var sweep_flag      = (options.clockwise) ? 1 : 0;
-
-  var rs = [rx, ry].join(',');
-  var flags = [large_arc_flag, sweep_flag].join(',');
-  var end_point = [ex, ey].join(',');
-  return 'a' + [rs, x_axis_rotation, flags, end_point].join(' ');
 }
 
 
@@ -394,25 +363,25 @@ function rotate1(stone, dr, dh, color1, color2) {
   var stone_center_y = cell_height / 2;
 
   var d_left = [
-    absM(stone_center_x - dh, stone_center_y - stone_radius),
-    relH(dh),
-    relA(dr, stone_radius, 0,  2 * stone_radius),
-    relH(-dh),
-    relA(dr, stone_radius, 0, -2 * stone_radius, { clockwise: true })
+    svg_util.absM(stone_center_x - dh, stone_center_y - stone_radius),
+    svg_util.relH(dh),
+    svg_util.relA(dr, stone_radius, 0,  2 * stone_radius),
+    svg_util.relH(-dh),
+    svg_util.relA(dr, stone_radius, 0, -2 * stone_radius, { clockwise: true })
   ].join(' ');
 
   var d_center = [
-    absM(stone_center_x, stone_center_y - stone_radius),
-    relH(dh),
-    relA(dr, stone_radius, 0,  2 * stone_radius),
-    relH(-dh),
-    relA(dr, stone_radius, 0, -2 * stone_radius, { clockwise: true })
+    svg_util.absM(stone_center_x, stone_center_y - stone_radius),
+    svg_util.relH(dh),
+    svg_util.relA(dr, stone_radius, 0,  2 * stone_radius),
+    svg_util.relH(-dh),
+    svg_util.relA(dr, stone_radius, 0, -2 * stone_radius, { clockwise: true })
   ].join(' ');
 
   var d_right = [
-    absM(stone_center_x + dh, stone_center_y - stone_radius),
-    relA(dr, stone_radius, 0,  2 * stone_radius),
-    relA(dr, stone_radius, 0, -2 * stone_radius)
+    svg_util.absM(stone_center_x + dh, stone_center_y - stone_radius),
+    svg_util.relA(dr, stone_radius, 0,  2 * stone_radius),
+    svg_util.relA(dr, stone_radius, 0, -2 * stone_radius)
   ].join(' ');
 
   stone.left.setAttribute('d', d_left);
@@ -429,25 +398,25 @@ function rotate2(stone, dr, dh, color1, color2) {
   var stone_center_y = cell_height / 2;
 
   var d_left = [
-    absM(stone_center_x - dh, stone_center_y - stone_radius),
-    relA(dr, stone_radius, 0,  2 * stone_radius),
-    relA(dr, stone_radius, 0, -2 * stone_radius)
+    svg_util.absM(stone_center_x - dh, stone_center_y - stone_radius),
+    svg_util.relA(dr, stone_radius, 0,  2 * stone_radius),
+    svg_util.relA(dr, stone_radius, 0, -2 * stone_radius)
   ].join(' ');
 
   var d_center = [
-    absM(stone_center_x, stone_center_y - stone_radius),
-    relH(-dh),
-    relA(dr, stone_radius, 0, 2 * stone_radius, { clockwise: true }),
-    relH(dh),
-    relA(dr, stone_radius, 0, -2 * stone_radius)
+    svg_util.absM(stone_center_x, stone_center_y - stone_radius),
+    svg_util.relH(-dh),
+    svg_util.relA(dr, stone_radius, 0, 2 * stone_radius, { clockwise: true }),
+    svg_util.relH(dh),
+    svg_util.relA(dr, stone_radius, 0, -2 * stone_radius)
   ].join(' ');
 
   var d_right = [
-    absM(stone_center_x + dh, stone_center_y - stone_radius),
-    relH(-dh),
-    relA(dr, stone_radius, 0, 2 * stone_radius, { clockwise: true }),
-    relH(dh),
-    relA(dr, stone_radius, 0, -2 * stone_radius)
+    svg_util.absM(stone_center_x + dh, stone_center_y - stone_radius),
+    svg_util.relH(-dh),
+    svg_util.relA(dr, stone_radius, 0, 2 * stone_radius, { clockwise: true }),
+    svg_util.relH(dh),
+    svg_util.relA(dr, stone_radius, 0, -2 * stone_radius)
   ].join(' ');
 
   stone.left.setAttribute('d', d_left);
