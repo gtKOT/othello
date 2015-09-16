@@ -271,31 +271,28 @@ function on_click_circle() {
 }
 
 function put_stone(i, j) {
-  if (players[turn] === HUMAN) {
-    var color1, color2, flip_que;
-    if (turn === BLACK_TURN) {
-      color1 = 'black';
-      color2 = 'white';
-    }
-    else {
-      color1 = 'white';
-      color2 = 'black';
-    }
-    if (cells[i][j] === EMPTY) {
-      flip_que = check_stone(i, j, turn);
-      if (flip_que.length > 0) {
-        cells[i][j] = turn;
-        coloring_stone(i, j, color1);
-        for (var k = 0; k < flip_que.length; k++) {
-          var ci = flip_que[k][0];
-          var cj = flip_que[k][1];
-          cells[ci][cj] = turn;
-        }
-        flip_stone(flip_que, color1, color2);
-        turn++;
-        turn %= 2;
-        turn_coloring(turn);
+  if (players[turn] !== HUMAN) {
+    return;
+  }
+
+  var color1 = (turn === BLACK_TURN) ? 'black' : 'white';
+  var color2 = (turn === BLACK_TURN) ? 'white' : 'black';
+  var flip_que;
+
+  if (cells[i][j] === EMPTY) {
+    flip_que = check_stone(i, j, turn);
+    if (flip_que.length > 0) {
+      cells[i][j] = turn;
+      coloring_stone(stones[i][j], color1);
+      for (var k = 0; k < flip_que.length; k++) {
+        var ci = flip_que[k][0];
+        var cj = flip_que[k][1];
+        cells[ci][cj] = turn;
       }
+      flip_stone(flip_que, color1, color2);
+      turn++;
+      turn %= 2;
+      turn_coloring(turn);
     }
   }
 }
@@ -335,17 +332,10 @@ function check_stone(i, j, turn) {
   return flip_que;
 }
 
-function coloring_stone(i, j, color) {
+function coloring_stone(stone, color) {
   var color1 = color;
-  var color2;
-  if (color === 'black') {
-    color2 = 'white';
-  }
-  else {
-    color2 = 'black';
-  }
+  var color2 = (color === 'black') ? 'white' : 'black';
 
-  var stone = stones[i][j];
   stone.left.setAttribute('fill', color2);
   stone.center.setAttribute('fill', color1);
   stone.right.setAttribute('fill', color1);
@@ -366,21 +356,15 @@ function flip_stone1(flip_que, ang, color1, color2) {
   for (var k = 0; k < flip_que.length; k++) {
     var i = flip_que[k][0];
     var j = flip_que[k][1];
-    rotate1(i, j, dr, dh, color1, color2);
+    rotate1(stones[i][j], dr, dh, color1, color2);
   }
 
   ang += d_ang;
 
-  if (ang === 90) {
-    setTimeout(function() {
-      flip_stone2(flip_que, ang, color1, color2);
-    }, dt); //タイマーセット．dtミリ秒ごとに1ステップ実行
-  }
-  else {
-    setTimeout(function() {
-      flip_stone1(flip_que, ang, color1, color2);
-    }, dt); //タイマーセット．dtミリ秒ごとに1ステップ実行
-  }
+  var flip = (ang === 90) ? flip_stone2 : flip_stone1;
+  setTimeout(function() {
+    flip(flip_que, ang, color1, color2);
+  }, dt); //タイマーセット．dtミリ秒ごとに1ステップ実行
 }
 
 function flip_stone2(flip_que, ang, color1, color2) {
@@ -394,7 +378,7 @@ function flip_stone2(flip_que, ang, color1, color2) {
   for (var k = 0; k < flip_que.length; k++) {
     var i = flip_que[k][0];
     var j = flip_que[k][1];
-    rotate2(i, j, dr, dh, color1, color2);
+    rotate2(stones[i][j], dr, dh, color1, color2);
   }
 
   ang += d_ang;
@@ -405,7 +389,7 @@ function flip_stone2(flip_que, ang, color1, color2) {
 }
 
 
-function rotate1(i, j, dr, dh, color1, color2) {
+function rotate1(stone, dr, dh, color1, color2) {
   var stone_center_x = cell_width  / 2;
   var stone_center_y = cell_height / 2;
 
@@ -430,8 +414,6 @@ function rotate1(i, j, dr, dh, color1, color2) {
     relA(dr, stone_radius, 0,  2 * stone_radius),
     relA(dr, stone_radius, 0, -2 * stone_radius)
   ].join(' ');
-
-  var stone = stones[i][j];
 
   stone.left.setAttribute('d', d_left);
   stone.center.setAttribute('d', d_center);
@@ -442,7 +424,7 @@ function rotate1(i, j, dr, dh, color1, color2) {
   stone.right.setAttribute('fill', color2);
 }
 
-function rotate2(i, j, dr, dh, color1, color2) {
+function rotate2(stone, dr, dh, color1, color2) {
   var stone_center_x = cell_width  / 2;
   var stone_center_y = cell_height / 2;
 
@@ -467,8 +449,6 @@ function rotate2(i, j, dr, dh, color1, color2) {
     relH(dh),
     relA(dr, stone_radius, 0, -2 * stone_radius)
   ].join(' ');
-
-  var stone = stones[i][j];
 
   stone.left.setAttribute('d', d_left);
   stone.center.setAttribute('d', d_center);
