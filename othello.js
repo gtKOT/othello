@@ -50,7 +50,7 @@ var WHITE_TURN = WHITE;
 var turn = BLACK_TURN;
 
 var dt = 0.1; // 石の回転アニメーションの間隔ミリ秒
-var d_ang = 6; // 石の回転アニメーションの角度ステップ
+var d_angle = 6; // 石の回転アニメーションの角度ステップ
 
 
 function set_board(evt) {
@@ -245,12 +245,12 @@ function put_stone(i, j) {
     return;
   }
 
-  var color1 = (turn === BLACK_TURN) ? 'black' : 'white';
-  var color2 = (turn === BLACK_TURN) ? 'white' : 'black';
+  var self_color     = (turn === BLACK_TURN) ? 'black' : 'white';
+  var opponent_color = (turn === BLACK_TURN) ? 'white' : 'black';
   var flip_coords = check_stone(i, j, turn);
 
   if (flip_coords.length > 0) {
-    coloring_stone(stones[i][j], color1);
+    coloring_stone(stones[i][j], self_color);
 
     cell_conditions[i][j] = turn;
     flip_coords.forEach(function(coord) {
@@ -259,7 +259,7 @@ function put_stone(i, j) {
 
     flip_stones(flip_coords.map(function(coord) {
       return stones[ coord[0] ][ coord[1] ];
-    }), color1, color2);
+    }), self_color, opponent_color);
 
     turn++;
     turn %= 2;
@@ -308,62 +308,57 @@ function check_stone(i, j, turn) {
   return flip_que;
 }
 
+/**
+ * @param {{left: SVGElement, center: SVGElement, right: SVGElement}} stone
+ * @param {string} color 'black' or 'white'
+ * @param {number} [opacity]
+ */
 function coloring_stone(stone, color, opacity) {
   opacity = (opacity != null) ? opacity : 1;
 
-  var color1 = color;
-  var color2 = (color === 'black') ? 'white' : 'black';
+  var head_color = color;
+  var tail_color = (color === 'black') ? 'white' : 'black';
 
-  stone.left.setAttribute('fill', color2);
-  stone.center.setAttribute('fill', color1);
-  stone.right.setAttribute('fill', color1);
+  stone.left.setAttribute('fill', tail_color);
+  stone.center.setAttribute('fill', head_color);
+  stone.right.setAttribute('fill', head_color);
   stone.left.setAttribute('fill-opacity', opacity);
   stone.center.setAttribute('fill-opacity', opacity);
   stone.right.setAttribute('fill-opacity', opacity);
 }
 
-function flip_stones(stones, color1, color2) {
-  var ang = 0;
-  flip_stones1(stones, ang, color1, color2);
-}
+/**
+ *
+ * @param {Array.<{left: SVGElement, center: SVGElement, right: SVGElement}>} stones
+ * @param {string} to_color
+ * @param {string} from_color
+ * @param {number} [angle]
+ */
+function flip_stones(stones, to_color, from_color, angle) {
+  angle = angle || 0;
 
-function flip_stones1(stones, ang, color1, color2) {
-  var dr = stone_radius * Math.cos(ang * Math.PI / 180);
-  var dh = stone_thickness * Math.sin(ang * Math.PI / 180);
-
-  stones.forEach(function(stone) {
-    rotate1(stone, dr, dh, color1, color2);
-  });
-
-  ang += d_ang;
-
-  var flip = (ang === 90) ? flip_stones2 : flip_stones1;
   setTimeout(function() {
-    flip(stones, ang, color1, color2);
+    var dr = stone_radius    * Math.cos(angle * Math.PI / 180);
+    var dh = stone_thickness * Math.sin(angle * Math.PI / 180);
+
+    if (0 <= angle && angle <= 90) {
+      stones.forEach(function(stone) {
+        rotate1(stone, dr, dh, to_color, from_color);
+      });
+    }
+    else if (90 < angle && angle <= 180) {
+      stones.forEach(function(stone) {
+        rotate2(stone, dr, dh, to_color, from_color);
+      });
+    }
+
+    if (angle <= 180) {
+      flip_stones(stones, to_color, from_color, angle + d_angle);
+    }
   }, dt); //タイマーセット．dtミリ秒ごとに1ステップ実行
 }
 
-function flip_stones2(stones, ang, color1, color2) {
-  if (ang > 180) {
-    return;
-  }
-
-  var dr = stone_radius * Math.cos(ang * Math.PI / 180);
-  var dh = stone_thickness * Math.sin(ang * Math.PI / 180);
-
-  stones.forEach(function(stone) {
-    rotate2(stone, dr, dh, color1, color2);
-  });
-
-  ang += d_ang;
-
-  setTimeout(function() {
-    flip_stones2(stones, ang, color1, color2);
-  }, dt); //タイマーセット．dtミリ秒ごとに1ステップ実行
-}
-
-
-function rotate1(stone, dr, dh, color1, color2) {
+function rotate1(stone, dr, dh, to_color, from_color) {
   var stone_center_x = cell_width  / 2;
   var stone_center_y = cell_height / 2;
 
@@ -393,12 +388,12 @@ function rotate1(stone, dr, dh, color1, color2) {
   stone.center.setAttribute('d', d_center);
   stone.right.setAttribute('d', d_right);
 
-  stone.left.setAttribute('fill', color1);
-  stone.center.setAttribute('fill', color2);
-  stone.right.setAttribute('fill', color2);
+  stone.left.setAttribute('fill', to_color);
+  stone.center.setAttribute('fill', from_color);
+  stone.right.setAttribute('fill', from_color);
 }
 
-function rotate2(stone, dr, dh, color1, color2) {
+function rotate2(stone, dr, dh, to_color, from_color) {
   var stone_center_x = cell_width  / 2;
   var stone_center_y = cell_height / 2;
 
@@ -428,9 +423,9 @@ function rotate2(stone, dr, dh, color1, color2) {
   stone.center.setAttribute('d', d_center);
   stone.right.setAttribute('d', d_right);
 
-  stone.left.setAttribute('fill', color1);
-  stone.center.setAttribute('fill', color1);
-  stone.right.setAttribute('fill', color2);
+  stone.left.setAttribute('fill', to_color);
+  stone.center.setAttribute('fill', to_color);
+  stone.right.setAttribute('fill', from_color);
 }
 
 
