@@ -191,11 +191,7 @@ function draw_stones(board_svg) {
       }
       var stone = stones[i][j];
       var stone_color = (cell_conditions[i][j] === BLACK) ? 'black' : 'white';
-
-      stone.left.setAttribute('fill-opacity', 1);
-      stone.center.setAttribute('fill-opacity', 1);
-      stone.right.setAttribute('fill-opacity', 1);
-      stone.right.setAttribute('fill', stone_color);
+      coloring_stone(stone, stone_color);
     }
   }
 }
@@ -219,8 +215,7 @@ function on_mouse_over_cell(evt) {
   if (cell_conditions[i][j] === EMPTY) {
     var stone = stones[i][j];
     var stone_color = (turn === BLACK_TURN) ? 'black' : 'white';
-    stone.right.setAttribute('fill', stone_color);
-    stone.right.setAttribute('fill-opacity', 0.5);
+    coloring_stone(stone, stone_color, 0.5);
   }
 }
 
@@ -231,7 +226,8 @@ function on_mouse_out_cell(evt) {
 
   if (cell_conditions[i][j] === EMPTY) {
     var stone = stones[i][j];
-    stone.right.setAttribute('fill-opacity', 0);
+    var stone_color = (turn === BLACK_TURN) ? 'black' : 'white';
+    coloring_stone(stone, stone_color, 0);
   }
 }
 
@@ -312,16 +308,18 @@ function check_stone(i, j, turn) {
   return flip_que;
 }
 
-function coloring_stone(stone, color) {
+function coloring_stone(stone, color, opacity) {
+  opacity = (opacity != null) ? opacity : 1;
+
   var color1 = color;
   var color2 = (color === 'black') ? 'white' : 'black';
 
   stone.left.setAttribute('fill', color2);
   stone.center.setAttribute('fill', color1);
   stone.right.setAttribute('fill', color1);
-  stone.left.setAttribute('fill-opacity', '1');
-  stone.center.setAttribute('fill-opacity', '1');
-  stone.right.setAttribute('fill-opacity', '1');
+  stone.left.setAttribute('fill-opacity', opacity);
+  stone.center.setAttribute('fill-opacity', opacity);
+  stone.right.setAttribute('fill-opacity', opacity);
 }
 
 function flip_stones(stones, color1, color2) {
