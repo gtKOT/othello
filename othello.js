@@ -14,18 +14,19 @@ var BLACK = 0;
 var WHITE = 1;
 var EMPTY = -1;
 
-var cells = [];
+/** @type {number} BLACK or WHITE or EMPTY */
+var cell_conditions = [];
 for (var i = 0; i < size + 2; i++) {
-  cells[i] = [];
+  cell_conditions[i] = [];
   for (var j = 0; j < size + 2; j++) {
-    cells[i][j] = EMPTY;
+    cell_conditions[i][j] = EMPTY;
   }
 }
 
-cells[half_size][half_size] = BLACK;
-cells[half_size][half_size + 1] = WHITE;
-cells[half_size + 1][half_size] = WHITE;
-cells[half_size + 1][half_size + 1] = BLACK;
+cell_conditions[half_size][half_size] = BLACK;
+cell_conditions[half_size][half_size + 1] = WHITE;
+cell_conditions[half_size + 1][half_size] = WHITE;
+cell_conditions[half_size + 1][half_size + 1] = BLACK;
 
 //-- AI実装のための準備 --
 var players = [];
@@ -132,8 +133,8 @@ function draw_stones(board_svg) {
         height: cell_height,
         viewBox: [0, 0, cell_width, cell_height].join(' ')
       });
-      cell.onmouseover = on_mouse_over;
-      cell.onclick = on_click;
+      cell.onmouseover = on_mouse_over_cell;
+      cell.onclick = on_click_cell;
 
       var stone_center_x = cell_width  / 2;
       var stone_center_y = cell_height / 2;
@@ -180,13 +181,13 @@ function draw_stones(board_svg) {
     }
   }
 
-  for (i = 0; i < cells.length; i++) {
-    for (j = 0; j < cells[i].length; j++) {
-      if (cells[i][j] === EMPTY) {
+  for (i = 0; i < cell_conditions.length; i++) {
+    for (j = 0; j < cell_conditions[i].length; j++) {
+      if (cell_conditions[i][j] === EMPTY) {
         continue;
       }
       var stone = stones[i][j];
-      var stone_color = (cells[i][j] === BLACK) ? 'black' : 'white';
+      var stone_color = (cell_conditions[i][j] === BLACK) ? 'black' : 'white';
 
       stone.left.setAttribute('fill-opacity', 1);
       stone.center.setAttribute('fill-opacity', 1);
@@ -200,7 +201,7 @@ function draw_stones(board_svg) {
     'class': 'helper-stone',
     r: stone_radius
   });
-  helper_stone.onclick = on_click_circle;
+  helper_stone.onclick = on_click_helper_stone;
   board_svg.appendChild(helper_stone);
 }
 
@@ -216,13 +217,13 @@ function to_pos(id) {
 }
 
 
-function on_mouse_over(evt) {
+function on_mouse_over_cell(evt) {
   var pos = to_pos(evt.currentTarget.id);
   var i = pos.i;
   var j = pos.j;
   helper_stone_i = i;
   helper_stone_j = j;
-  if (cells[i][j] === EMPTY) {
+  if (cell_conditions[i][j] === EMPTY) {
     var stone_color = (turn === BLACK_TURN) ? 'black' : 'white';
     helper_stone.setAttribute('fill', stone_color);
     helper_stone.setAttribute('cx', (i - 1) * cell_width + cell_width / 2);
@@ -230,12 +231,12 @@ function on_mouse_over(evt) {
   }
 }
 
-function on_click(evt) {
+function on_click_cell(evt) {
   var pos = to_pos(evt.currentTarget.id);
   put_stone(pos.i, pos.j);
 }
 
-function on_click_circle() {
+function on_click_helper_stone() {
   put_stone(helper_stone_i, helper_stone_j);
 }
 
@@ -244,29 +245,39 @@ function put_stone(i, j) {
     return;
   }
 
+  if (cell_conditions[i][j] !== EMPTY) {
+    return;
+  }
+
   var color1 = (turn === BLACK_TURN) ? 'black' : 'white';
   var color2 = (turn === BLACK_TURN) ? 'white' : 'black';
-  var flip_que;
+  var flip_coords = check_stone(i, j, turn);
 
-  if (cells[i][j] === EMPTY) {
-    flip_que = check_stone(i, j, turn);
-    if (flip_que.length > 0) {
-      cells[i][j] = turn;
-      coloring_stone(stones[i][j], color1);
-      for (var k = 0; k < flip_que.length; k++) {
-        var ci = flip_que[k][0];
-        var cj = flip_que[k][1];
-        cells[ci][cj] = turn;
-      }
-      flip_stone(flip_que, color1, color2);
-      turn++;
-      turn %= 2;
-      turn_coloring(turn);
-    }
+  if (flip_coords.length > 0) {
+    coloring_stone(stones[i][j], color1);
+
+    cell_conditions[i][j] = turn;
+    flip_coords.forEach(function(coord) {
+      cell_conditions[ coord[0] ][ coord[1] ] = turn;
+    });
+
+    flip_stones(flip_coords.map(function(coord) {
+      return stones[ coord[0] ][ coord[1] ];
+    }), color1, color2);
+
+    turn++;
+    turn %= 2;
+    set_turn_stone_color(turn);
   }
 }
 
 
+/**
+ * @param {number} i
+ * @param {number} j
+ * @param {number} turn BLACK_TURN or WHITE_TURN
+ * @returns {Array.<Array.<number>>} 座標の配列
+ */
 function check_stone(i, j, turn) {
   var flip_que = [];
   var itself = turn;
@@ -276,13 +287,13 @@ function check_stone(i, j, turn) {
     for (var dj = -1; dj < 2; dj++) {
       ci = i + di;
       cj = j + dj;
-      next = cells[ci][cj];
+      next = cell_conditions[ci][cj];
       if (next === another) { // di=dj=0 はここで除外される
         cnt = 0;
         while (next === another) {
           ci += di;
           cj += dj;
-          next = cells[ci][cj];
+          next = cell_conditions[ci][cj];
           cnt++;
         }
         if (next === itself) {
@@ -313,30 +324,28 @@ function coloring_stone(stone, color) {
   stone.right.setAttribute('fill-opacity', '1');
 }
 
-function flip_stone(flip_que, color1, color2) {
+function flip_stones(stones, color1, color2) {
   var ang = 0;
-  flip_stone1(flip_que, ang, color1, color2);
+  flip_stones1(stones, ang, color1, color2);
 }
 
-function flip_stone1(flip_que, ang, color1, color2) {
+function flip_stones1(stones, ang, color1, color2) {
   var dr = stone_radius * Math.cos(ang * Math.PI / 180);
   var dh = stone_thickness * Math.sin(ang * Math.PI / 180);
 
-  for (var k = 0; k < flip_que.length; k++) {
-    var i = flip_que[k][0];
-    var j = flip_que[k][1];
-    rotate1(stones[i][j], dr, dh, color1, color2);
-  }
+  stones.forEach(function(stone) {
+    rotate1(stone, dr, dh, color1, color2);
+  });
 
   ang += d_ang;
 
-  var flip = (ang === 90) ? flip_stone2 : flip_stone1;
+  var flip = (ang === 90) ? flip_stones2 : flip_stones1;
   setTimeout(function() {
-    flip(flip_que, ang, color1, color2);
+    flip(stones, ang, color1, color2);
   }, dt); //タイマーセット．dtミリ秒ごとに1ステップ実行
 }
 
-function flip_stone2(flip_que, ang, color1, color2) {
+function flip_stones2(stones, ang, color1, color2) {
   if (ang > 180) {
     return;
   }
@@ -344,16 +353,14 @@ function flip_stone2(flip_que, ang, color1, color2) {
   var dr = stone_radius * Math.cos(ang * Math.PI / 180);
   var dh = stone_thickness * Math.sin(ang * Math.PI / 180);
 
-  for (var k = 0; k < flip_que.length; k++) {
-    var i = flip_que[k][0];
-    var j = flip_que[k][1];
-    rotate2(stones[i][j], dr, dh, color1, color2);
-  }
+  stones.forEach(function(stone) {
+    rotate2(stone, dr, dh, color1, color2);
+  });
 
   ang += d_ang;
 
   setTimeout(function() {
-    flip_stone2(flip_que, ang, color1, color2);
+    flip_stones2(stones, ang, color1, color2);
   }, dt); //タイマーセット．dtミリ秒ごとに1ステップ実行
 }
 
@@ -433,16 +440,16 @@ function pass() {
   if (players[turn] === HUMAN) {
     turn++;
     turn %= 2;
-    turn_coloring(turn);
+    set_turn_stone_color(turn);
     pass_flag[turn] = 1;
   }
 }
 
-function turn_coloring(turn) {
+function set_turn_stone_color(turn) {
   var turn_stone = document.getElementById('turn-stone-holder');
   turn_stone.innerHTML = (turn === BLACK_TURN) ? '●' : '○';
 }
 
-function player_change(color, value){
+function switch_player(color, value) {
   players[color] = value;
 }
