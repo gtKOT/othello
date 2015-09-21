@@ -5,127 +5,142 @@
 
   // 中間生成オブジェクト？（生き残らせた方が良いかもしれない）
   function Cell(vertex) {
+    /** @type {number} */
     this.x = undefined;
+    /** @type {number} */
     this.y = undefined;
+    /** @type {Vertex} */
     this.vertex = vertex;
-    this.group = undefined;
+    /** @type {number} */
+    this.groupId = undefined;
+    /** @type {number} */
     this.id = vertex.getId();
   }
 
 
-  function draw_board(board_svg, cell_width, cell_height, graph_data, cell_directions) {
-    var k;
+  /**
+   * @param {Cell} cell
+   * @param {number} width
+   * @param {number} height
+   * @returns {SVGRectElement}
+   * @private
+   */
+  function _cell_to_svg(cell, width, height) {
+    return svg_util.createRect({
+      'class': 'ground',
+      x      : cell.x,
+      y      : cell.y,
+      width  : width,
+      height : height
+    });
+  }
 
+
+  function draw_board(board_svg, cell_width, cell_height, graph, cell_directions) {
     /*-- sample --
      <g transform="translate(100,100)">
        <rect x="0" y="0" width="100" height="100" fill="lightgreen" stroke="black" stroke-width="5" />
        <rect x="100" y="50" width="100" height="100" fill="lightgreen" stroke="black" stroke-width="5" />
      </g>
     --*/
+    var vertices = graph.getVertices();
 
-    // id: CellObject の形で格納する．現状では配列と大差ない．
+    // vertex_id: CellObject の形で格納する．現状では配列と大差ない．
     var cells = {};
+    vertices.forEach(function(v) {
+      cells[v.getId()] = new Cell(v);
+    });
 
-    // グループに属しているcellを，id: [cell, ...]の形で格納する
+    // グループに属しているcellを，group_id: [cell, ...]の形で格納する
+    var group_id = 0;
     var groups = {};
 
     // 各頂点に対応するセルの座標を決定
-    var vertices = graph_data.getVertices();
-    var group_id = 0;
-    for (var v_num = 0; v_num < vertices.length; v_num++) {
-      var v = vertices[v_num];
-      var v_id = v.getId();
-      var cell = new Cell(v);
-      cells[v_id] = cell;
+    vertices.forEach(function(v) {
+      var neighbor_groups = [];  // TODO 名前変更
+      var found_group_flags = {};
 
-      var edges = v.getEdges();
-      var adjoint_groups = [];
-      var found_groups = {};
-      for (var e_num = 0; e_num < edges.length; e_num++) {
-        var terminal_v = edges[e_num].getTerminal();
+      v.getEdges().forEach(function(e) {
+        var v_id = v.getId();
+        var terminal_v = e.getTerminal();
         var terminal_v_id = terminal_v.getId();
         if (terminal_v_id < v_id) {
-          var terminal_v_group = cells[terminal_v_id].group;
+          var terminal_v_group_id = cells[terminal_v_id].groupId;
           // ここで重複は排除しておきたい．
-          if (found_groups[terminal_v_group] === undefined) {
-            found_groups[terminal_v_group] = true;
-            adjoint_groups.push({
-              group     : terminal_v_group,
-              terminalId: terminal_v_id,
-              direction : edges[e_num].getDirection()
+          if (!found_group_flags[terminal_v_group_id]) {
+            found_group_flags[terminal_v_group_id] = true;
+            neighbor_groups.push({
+              groupId          : terminal_v_group_id,
+              connectionPointId: terminal_v_id,
+              directionToGroup : e.getDirection()
             });
           }
         }
-      }
+      });
 
       // グループ番号の若い順にソート
-      adjoint_groups.sort(function(x, y) {
-        if (x.group < y.group) return -1;
-        if (x.group > y.group) return 1;
+      neighbor_groups.sort(function(a, b) {
+        if (a.groupId < b.groupId) return -1;
+        if (a.groupId > b.groupId) return 1;
         return 0;
       });
 
-      if (adjoint_groups.length > 0) {
-        // 既存のセルグループに追加
-        var parent_group = adjoint_groups[0].group;
-        var parent_v_id = adjoint_groups[0].terminalId;
-        var to_parent = cell_directions[adjoint_groups[0].direction];
+      var cell = cells[v.getId()];
 
-        cell.group = parent_group;
-        cell.x = cells[parent_v_id].x - to_parent[0] * cell_width;
-        cell.y = cells[parent_v_id].y - to_parent[1] * cell_height;
-        groups[cell.group].push(cell);
+      if (neighbor_groups.length > 0) {
+        // 既存のセルグループに追加
+        var parent_group_id = neighbor_groups[0].groupId;
+        var parent_v_id = neighbor_groups[0].connectionPointId;
+        var unit_vector_to_parent = cell_directions[neighbor_groups[0].directionToGroup];
+
+        cell.x = cells[parent_v_id].x - unit_vector_to_parent[0] * cell_width;
+        cell.y = cells[parent_v_id].y - unit_vector_to_parent[1] * cell_height;
+        cell.groupId = parent_group_id;
+        groups[parent_group_id].push(cell);
 
         // 残りのグループたちをこのセルに結合
-        for (k = 1; k < adjoint_groups.length; k++) {
-          var child_group = groups[adjoint_groups[k].group];
-          var direction_to_bond = cell_directions[adjoint_groups[k].direction];
-          var linked_cell_id = [adjoint_groups[k].terminalId];
-          var vector_to_linked_cell = [cells[linked_cell_id].x, cells[linked_cell_id].y];
-          for (var cell_k = 0; cell_k < child_group.length; cell_k++) {
-            var child_cell = child_group[cell_k];
-            child_cell.x += cell.x - vector_to_linked_cell[0] + direction_to_bond[0] * cell_width;
-            child_cell.y += cell.y - vector_to_linked_cell[1] + direction_to_bond[1] * cell_height;
-            child_cell.group = parent_group;
-          }
+        for (var i = 1; i < neighbor_groups.length; i++) {
+          var child_group_id = neighbor_groups[i].groupId;
+          var child_group = groups[child_group_id];
+          var unit_vector_to_child = cell_directions[neighbor_groups[i].directionToGroup];
+          var linked_cell = cells[neighbor_groups[i].connectionPointId];
+
+          child_group.forEach(function(child_cell) {
+            child_cell.x += (cell.x - linked_cell.x) + unit_vector_to_child[0] * cell_width;
+            child_cell.y += (cell.y - linked_cell.y) + unit_vector_to_child[1] * cell_height;
+            child_cell.groupId = parent_group_id;
+          });
 
           // 子グループを親グループに統合
-          Array.prototype.push.apply(groups[parent_group], groups[child_group]);
-          groups[child_group] = null;
+          Array.prototype.push.apply(groups[parent_group_id], groups[child_group]);
+          groups[child_group_id] = null;
         }
 
       }
       else {
         // 新規セルグループ
-        cell.group = group_id;
-        group_id++;
         cell.x = 0;
         cell.y = 0;
-        groups[cell.group] = [cell];
+        cell.groupId = group_id;
+        groups[group_id] = [cell];
+        group_id++;
       }
 
-
-    }
+    });
 
 
 
     // board 全体を平行移動するためにグループ要素
     var group_of_cells = svg_util.createG({
-      id: "cells"
+      id: 'cells'
     });
 
-    board_svg.appendChild(group_of_cells);
-
     //-- 下地 --------------------------------------------   
-    for (k in cells) {
-      group_of_cells.appendChild(svg_util.createRect({
-        'class': 'ground',
-        x      : cells[k].x,
-        y      : cells[k].y,
-        width  : cell_width,
-        height : cell_height
-      }));
+    for (var key in cells) {
+      group_of_cells.appendChild( _cell_to_svg(cells[key], cell_width, cell_height) );
     }
+
+    board_svg.appendChild(group_of_cells);
 
 
     //--- 4箇所のドット ----------------------------------
