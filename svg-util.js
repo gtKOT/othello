@@ -66,7 +66,7 @@
 
   /**
    * @param {Object} attributes
-   * @returns {SVGElement}
+   * @returns {SVGTextElement}
    */
   function createText(attributes) {
     return _createSVGElement('text', attributes);
@@ -75,7 +75,7 @@
 
   /**
    * @param {Object} attributes
-   * @returns {SVGElement}
+   * @returns {SVGGElement}
    */
   function createG(attributes) {
     return _createSVGElement('g', attributes);

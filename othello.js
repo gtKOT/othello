@@ -58,57 +58,8 @@ var d_angle = 6; // 石の回転アニメーションの角度ステップ
 
 function set_board(evt) {
   var svgsvg = evt.target;
-  _draw_board(svgsvg, cell_width, cell_height, graph_data, cell_directions);
+  draw_board(svgsvg, cell_width, cell_height, graph_data, cell_directions);
   draw_stones(svgsvg, cell_width, cell_height);
-}
-
-
-function _draw_board(board_svg) {
-  var i, j;
-
-  var board_width  = cell_width  * size;
-  var board_height = cell_height * size;
-
-  //-- 下地 --------------------------------------------
-  board_svg.appendChild(svg_util.createRect({
-    'class': 'ground',
-    x: 0,
-    y: 0,
-    width : board_width,
-    height: board_height
-  }));
-
-  //--- 罫線 -------------------------------------------
-  for (i = 1; i <= size - 1; i++) {
-    board_svg.appendChild(svg_util.createLine({
-      'class': 'rule',
-      x1: cell_width * i,
-      y1: 0,
-      x2: cell_width * i,
-      y2: board_height
-    }));
-  }
-  for (i = 1; i <= size - 1; i++) {
-    board_svg.appendChild(svg_util.createLine({
-      'class': 'rule',
-      x1: 0,
-      y1: cell_height * i,
-      x2: board_width,
-      y2: cell_height * i
-    }));
-  }
-
-  //--- 4箇所のドット ----------------------------------
-  for (i = 0; i < 2; i++) {
-    for (j = 0; j < 2; j++) {
-      board_svg.appendChild(svg_util.createCircle({
-        'class': 'dot',
-        cx: cell_width  * 2 + cell_width  * half_size * i,
-        cy: cell_height * 2 + cell_height * half_size * j,
-        r: 5
-      }));
-    }
-  }
 }
 
 
